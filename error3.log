@@ -1,0 +1,235 @@
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :generateDebugBuildConfig UP-TO-DATE
+> Task :checkDebugAarMetadata UP-TO-DATE
+> Task :generateDebugResValues UP-TO-DATE
+> Task :mapDebugSourceSetPaths UP-TO-DATE
+> Task :generateDebugResources UP-TO-DATE
+> Task :mergeDebugResources UP-TO-DATE
+> Task :packageDebugResources UP-TO-DATE
+> Task :parseDebugLocalResources UP-TO-DATE
+> Task :createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :extractDeepLinksDebug UP-TO-DATE
+> Task :processDebugMainManifest UP-TO-DATE
+> Task :processDebugManifest UP-TO-DATE
+> Task :processDebugManifestForPackage UP-TO-DATE
+> Task :processDebugResources UP-TO-DATE
+> Task :javaPreCompileDebug UP-TO-DATE
+> Task :mergeDebugShaders UP-TO-DATE
+> Task :compileDebugShaders NO-SOURCE
+> Task :generateDebugAssets UP-TO-DATE
+> Task :mergeDebugAssets UP-TO-DATE
+> Task :compressDebugAssets UP-TO-DATE
+> Task :desugarDebugFileDependencies UP-TO-DATE
+> Task :checkDebugDuplicateClasses UP-TO-DATE
+> Task :mergeExtDexDebug UP-TO-DATE
+> Task :mergeLibDexDebug UP-TO-DATE
+> Task :mergeDebugJniLibFolders UP-TO-DATE
+> Task :mergeDebugNativeLibs UP-TO-DATE
+> Task :stripDebugDebugSymbols UP-TO-DATE
+> Task :validateSigningDebug UP-TO-DATE
+> Task :writeDebugAppMetadata UP-TO-DATE
+> Task :writeDebugSigningConfigVersions UP-TO-DATE
+
+> Task :kspDebugKotlin FAILED
+e: [ksp] C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt: (273, 20): Function declaration must have a name
+e: Error occurred in KSP, check log for detail
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:269:10 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:269:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:269:14 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:269:15 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:270:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:270:28 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:26 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:60 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:61 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:71 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:79 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:80 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:87 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:271:103 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:17 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:15 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:277:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:277:23 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:277:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:277:29 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:21 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:22 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:29 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:31 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:39 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:281:40 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:32 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:33 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:41 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:26 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:35 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:30 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:31 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:16 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:17 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:18 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:22 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:45 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:46 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:59 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:61 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:63 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:72 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:73 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:77 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:78 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:85 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:86 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:287:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:287:23 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:287:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:287:29 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:32 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:34 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:42 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:43 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:32 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:33 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:44 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:26 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:36 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:37 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:48 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:49 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:57 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:58 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:63 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:64 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:294:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:294:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:294:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:294:30 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:294:31 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:26 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:33 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:35 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:43 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:299:44 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:300:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:300:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:300:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:300:32 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:300:33 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:300:45 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:26 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:38 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:39 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:50 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:51 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:59 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:60 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:65 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:301:66 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:302:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:302:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:302:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:302:30 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:302:31 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:16 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:17 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:33 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:36 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:40 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:42 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:314:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:314:23 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:314:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:314:29 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:316:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:316:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:316:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:316:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:316:26 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:318:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:318:23 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:318:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:318:29 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:16 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:17 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:18 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:22 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:24 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:25 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:49 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:51 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:58 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:59 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:65 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:66 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:67 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:68 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:74 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:319:75 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:320:13 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:320:20 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:9 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:11 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:17 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:18 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:21 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:30 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:321:32 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:326:5 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:757:1 Expecting a top level declaration
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':kspDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUİLD FAILED in 1s
+29 actionable tasks: 2 executed, 27 up-to-date

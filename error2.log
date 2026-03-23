@@ -1,0 +1,226 @@
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :generateDebugBuildConfig UP-TO-DATE
+> Task :checkDebugAarMetadata UP-TO-DATE
+> Task :generateDebugResValues UP-TO-DATE
+> Task :mapDebugSourceSetPaths UP-TO-DATE
+> Task :generateDebugResources UP-TO-DATE
+> Task :mergeDebugResources UP-TO-DATE
+> Task :packageDebugResources UP-TO-DATE
+> Task :parseDebugLocalResources UP-TO-DATE
+> Task :createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :extractDeepLinksDebug UP-TO-DATE
+> Task :processDebugMainManifest UP-TO-DATE
+> Task :processDebugManifest UP-TO-DATE
+> Task :processDebugManifestForPackage UP-TO-DATE
+> Task :processDebugResources UP-TO-DATE
+> Task :javaPreCompileDebug UP-TO-DATE
+> Task :mergeDebugShaders UP-TO-DATE
+> Task :compileDebugShaders NO-SOURCE
+> Task :generateDebugAssets UP-TO-DATE
+> Task :mergeDebugAssets UP-TO-DATE
+> Task :compressDebugAssets UP-TO-DATE
+> Task :desugarDebugFileDependencies UP-TO-DATE
+> Task :checkDebugDuplicateClasses UP-TO-DATE
+> Task :mergeExtDexDebug UP-TO-DATE
+> Task :mergeLibDexDebug UP-TO-DATE
+> Task :mergeDebugJniLibFolders UP-TO-DATE
+> Task :mergeDebugNativeLibs UP-TO-DATE
+> Task :stripDebugDebugSymbols UP-TO-DATE
+> Task :validateSigningDebug UP-TO-DATE
+> Task :writeDebugAppMetadata UP-TO-DATE
+> Task :writeDebugSigningConfigVersions UP-TO-DATE
+
+> Task :kspDebugKotlin FAILED
+e: [ksp] C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt: (264, 20): Function declaration must have a name
+e: Error occurred in KSP, check log for detail
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:203:18 Expecting 'catch' or 'finally'
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:255:19 Expecting ')'
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:255:19 Unexpected tokens (use ';' to separate expressions on the same line)
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:260:6 Expecting 'catch' or 'finally'
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:260:13 Expecting an element
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:261:28 Expecting ')'
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:261:28 Unexpected tokens (use ';' to separate expressions on the same line)
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:263:17 Expecting an element
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:264:15 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:264:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:268:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:268:23 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:268:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:268:29 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:21 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:22 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:29 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:31 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:39 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:272:40 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:32 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:33 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:273:41 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:274:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:274:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:274:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:274:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:274:26 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:274:35 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:275:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:275:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:275:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:275:30 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:275:31 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:16 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:17 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:18 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:22 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:45 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:46 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:59 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:61 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:63 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:72 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:73 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:77 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:78 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:85 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:276:86 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:278:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:278:23 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:278:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:278:29 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:32 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:34 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:42 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:282:43 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:32 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:33 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:283:44 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:26 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:36 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:37 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:48 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:49 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:57 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:58 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:63 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:284:64 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:30 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:285:31 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:26 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:33 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:35 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:43 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:290:44 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:32 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:33 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:291:45 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:26 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:38 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:39 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:50 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:51 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:59 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:60 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:65 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:292:66 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:30 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:293:31 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:16 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:17 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:33 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:36 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:40 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:296:42 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:23 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:305:29 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:307:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:307:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:307:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:307:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:307:26 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:309:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:309:23 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:309:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:309:29 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:16 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:17 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:18 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:19 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:22 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:24 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:25 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:49 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:51 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:58 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:59 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:65 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:66 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:67 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:68 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:74 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:310:75 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:311:13 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:311:20 Expecting member declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:11 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:17 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:18 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:19 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:21 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:30 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:312:32 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:317:5 Expecting a top level declaration
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/patcher/ApkBuilder.kt:748:1 Expecting a top level declaration
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':kspDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUİLD FAILED in 1s
+29 actionable tasks: 2 executed, 27 up-to-date

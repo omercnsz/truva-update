@@ -1,0 +1,78 @@
+Starting a Gradle Daemon, 4 busy and 2 incompatible and 4 stopped Daemons could not be reused, use --status for details
+> Task :preBuild UP-TO-DATE
+> Task :preReleaseBuild UP-TO-DATE
+> Task :mergeReleaseJniLibFolders
+> Task :buildKotlinToolingMetadata
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :generateReleaseBuildConfig
+> Task :checkReleaseDuplicateClasses
+> Task :checkReleaseAarMetadata
+> Task :mergeReleaseNativeLibs
+> Task :processReleaseNavigationResources
+> Task :compileReleaseNavigationResources
+> Task :generateReleaseResValues
+> Task :mapReleaseSourceSetPaths
+> Task :generateReleaseResources
+
+> Task :stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libadb.so, libgojni.so. Run with --info option to learn more.
+
+> Task :packageReleaseResources
+> Task :extractReleaseNativeSymbolTables
+> Task :mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :createReleaseCompatibleScreenManifests
+> Task :extractDeepLinksRelease
+> Task :parseReleaseLocalResources
+
+> Task :processReleaseMainManifest
+C:\Users\User\Desktop\Truva\src\main\AndroidManifest.xml:37:9-41 Warning:
+	android:extractNativeLibs should not be specified in this source AndroidManifest.xml file. See https://d.android.com/guide/topics/manifest/application-element#extractNativeLibs for more information.
+The AGP Upgrade Assistant can remove the attribute from the AndroidManifest.xml file and update the build file accordingly. See https://d.android.com/studio/build/agp-upgrade-assistant for more information.
+
+> Task :processReleaseManifest
+> Task :javaPreCompileRelease
+> Task :mergeReleaseArtProfile
+> Task :extractProguardFiles
+> Task :mergeReleaseStartupProfile UP-TO-DATE
+> Task :mergeReleaseShaders
+> Task :compileReleaseShaders NO-SOURCE
+> Task :generateReleaseAssets UP-TO-DATE
+> Task :mergeReleaseAssets
+> Task :compressReleaseAssets
+> Task :extractReleaseVersionControlInfo
+> Task :mergeReleaseResources
+> Task :collectReleaseDependencies
+> Task :processReleaseManifestForPackage
+> Task :sdkReleaseDependencyData
+> Task :validateSigningRelease
+> Task :writeReleaseAppMetadata
+> Task :writeReleaseSigningConfigVersions
+> Task :processReleaseResources
+> Task :kspReleaseKotlin
+> Task :compileReleaseKotlin
+w: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/TruvaDeviceAdmin.kt:106:21 Variable 'flagToManaged' is never used
+w: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/TruvaDeviceAdmin.kt:107:21 Variable 'flagToParent' is never used
+w: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/TruvaDeviceAdmin.kt:224:13 Parameter 'context' is never used
+w: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/sandbox/adb/AdbScanner.kt:71:33 'resolveService(NsdServiceInfo!, NsdManager.ResolveListener!): Unit' is deprecated. Deprecated in Java
+
+> Task :compileReleaseJavaWithJavac
+> Task :mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :processReleaseJavaRes
+> Task :expandReleaseArtProfileWildcards
+> Task :mergeReleaseJavaResource
+
+> Task :minifyReleaseWithR8
+WARNING: C:\Users\User\Desktop\Truva\proguard-rules.pro:12:1-25: R8: Option -repackageclasses overrides -flattenpackagehierarchy
+
+> Task :convertShrunkResourcesToBinaryRelease
+> Task :compileReleaseArtProfile
+> Task :optimizeReleaseResources
+
+> Task :packageRelease
+PackagingOptions.jniLibs.useLegacyPackaging should be set to true because android:extractNativeLibs is set to "true" in AndroidManifest.xml.
+
+> Task :createReleaseApkListingFileRedirect
+> Task :assembleRelease
+
+BUILD SUCCESSFUL in 2m 11s
+49 actionable tasks: 47 executed, 2 up-to-date

@@ -1,0 +1,41 @@
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :generateDebugBuildConfig UP-TO-DATE
+> Task :checkDebugAarMetadata UP-TO-DATE
+> Task :processDebugNavigationResources UP-TO-DATE
+> Task :compileDebugNavigationResources UP-TO-DATE
+> Task :generateDebugResValues UP-TO-DATE
+> Task :mapDebugSourceSetPaths UP-TO-DATE
+> Task :generateDebugResources UP-TO-DATE
+> Task :mergeDebugResources UP-TO-DATE
+> Task :packageDebugResources UP-TO-DATE
+> Task :parseDebugLocalResources UP-TO-DATE
+> Task :createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :extractDeepLinksDebug UP-TO-DATE
+> Task :processDebugMainManifest UP-TO-DATE
+> Task :processDebugManifest UP-TO-DATE
+> Task :processDebugManifestForPackage UP-TO-DATE
+> Task :processDebugResources UP-TO-DATE
+> Task :kspDebugKotlin UP-TO-DATE
+
+> Task :compileDebugKotlin
+e: file:///C:/Users/User/Desktop/Truva/src/main/kotlin/com/truva/Main.kt:513:38 Unresolved reference: PermissionDashboardScreen
+
+> Task :compileDebugKotlin FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 3s
+19 actionable tasks: 2 executed, 17 up-to-date

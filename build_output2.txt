@@ -1,0 +1,54 @@
+
+> Configure project :
+e: file:///C:/Users/User/Desktop/Truva/build.gradle.kts:26:35: Unresolved reference: util
+e: file:///C:/Users/User/Desktop/Truva/build.gradle.kts:28:40: Unresolved reference: load
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* Where:
+Build file 'C:\Users\User\Desktop\Truva\build.gradle.kts' line: 26
+
+* What went wrong:
+Script compilation errors:
+
+  Line 26:             val localProps = java.util.Properties().apply {
+                                             ^ Unresolved reference: util
+
+  Line 28:                 if (propFile.exists()) load(propFile.inputStream())
+                                                  ^ Unresolved reference: load
+
+2 errors
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* Where:
+Build file 'C:\Users\User\Desktop\Truva\build.gradle.kts' line: 26
+
+* What went wrong:
+Script compilation errors:
+
+  Line 26:             val localProps = java.util.Properties().apply {
+                                             ^ Unresolved reference: util
+
+  Line 28:                 if (propFile.exists()) load(propFile.inputStream())
+                                                  ^ Unresolved reference: load
+
+2 errors
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUİLD FAILED in 1s

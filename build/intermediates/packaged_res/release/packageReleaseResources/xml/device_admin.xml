@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Truva Work Profile - Device Admin Policy
+  İş Profili oluşturma/yönetme için gerekli minimum yetki tanımı
+-->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <!-- Work Profile yönetimi için gerekli temel politikalar -->
+        <limit-password />
+        <reset-password />
+        <force-lock />
+        <wipe-data />
+    </uses-policies>
+</device-admin>

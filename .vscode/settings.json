@@ -1,0 +1,13 @@
+{
+  // Kotlin Language Server Java 25 desteklemediği için JDK 17 kullan (IllegalArgumentException: 25.0.1 hatasını önler)
+  // JDK 17 yüklü değilse: https://adoptium.net/ veya Oracle JDK 17 indir
+  // Kendi JDK 17 yolunu yaz (örnek: "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.x.x-hotspot")
+  "kotlin.java.home": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.18.8-hotspot",
+  "java.import.gradle.enabled": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+
+  // suppress gopls errors originating from downloaded modules
+  "gopls": {
+    "directoryFilters": ["-**/pkg/mod/**"]
+  }
+}

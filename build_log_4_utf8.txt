@@ -1,0 +1,58 @@
+﻿To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+.\gradlew : Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen
+ if you use versions of Android Studio and the command-line tools that were released at different times.
+At line:1 char:1
++ .\gradlew assembleDebug --no-daemon > build_log_4.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: SDK pr...ifferent times.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :generateDebugBuildConfig
+> Task :generateDebugResValues
+> Task :checkDebugAarMetadata
+> Task :mapDebugSourceSetPaths
+> Task :generateDebugResources
+> Task :packageDebugResources
+> Task :createDebugCompatibleScreenManifests
+> Task :extractDeepLinksDebug
+> Task :parseDebugLocalResources
+> Task :mergeDebugResources
+> Task :processDebugMainManifest
+> Task :processDebugManifest
+> Task :javaPreCompileDebug
+> Task :mergeDebugShaders
+> Task :compileDebugShaders NO-SOURCE
+> Task :generateDebugAssets UP-TO-DATE
+> Task :mergeDebugAssets
+> Task :compressDebugAssets
+> Task :mergeDebugJniLibFolders
+> Task :checkDebugDuplicateClasses
+> Task :validateSigningDebug
+> Task :writeDebugAppMetadata
+> Task :writeDebugSigningConfigVersions
+> Task :mergeLibDexDebug
+> Task :processDebugManifestForPackage
+> Task :mergeDebugNativeLibs
+> Task :processDebugResources FAILED
+> Task :desugarDebugFileDependencies
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':processDebugResources'.
+> java.io.IOException: Couldn't delete C:\Users\User\Desktop\Truva\build\intermediates\compile_and_runtime_not_namespaced_r_class_jar\debug\R.jar
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BU─░LD FAILED in 11s
+26 actionable tasks: 26 executed
+

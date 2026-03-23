@@ -16,11 +16,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
@@ -28,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,12 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.lifecycleScope
 import com.truva.R
-import com.truva.ui.IpStatusSection
-import com.truva.ui.ManipulationIntegrityScreen
-import com.truva.ui.RegionProfileSection
-import com.truva.ui.SandboxSection
-import com.truva.ui.SmartRoutingSection
-import com.truva.ui.ExpiredScreen
+import com.truva.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -374,228 +368,208 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
     val isDisconnecting = connectionState == VpnState.DISCONNECTING
     val isBusy = isConnecting || isDisconnecting
 
-    // Hangi sekme seçili
-    var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("BAĞLANTI", "UYGULAMALAR", "GÜVENLİK")
+    // Hangi ekran seçili
+    var selectedScreen by remember { mutableIntStateOf(0) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    // Güvenlik sekmesi içindeki genişletilmiş bölümler
-    var expandedSection by remember { mutableIntStateOf(0) }
-
-    Scaffold(
-        topBar = {
-            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-                // Üst Bar: Logo + Başlık
-                Row(
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerShape = RectangleShape,
+                modifier = Modifier.width(300.dp).fillMaxHeight()
+            ) {
+                // Drawer Header
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(24.dp)
                 ) {
-                    // Logo
                     Image(
-                        painter = painterResource(id = R.mipmap.ic_launcher),
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
                         contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(MaterialTheme.shapes.small)
+                        modifier = Modifier.size(64.dp)
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "TRUVA",
-                        style = MaterialTheme.typography.titleLarge,
+                        "TRUVA VPN",
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 1.sp
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        "v17.1.1 Premium",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
 
-                // Tab Menüsü
-                TabRow(
-                    selectedTabIndex = selectedTab,
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                            color = MaterialTheme.colorScheme.primary
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Menu Items
+                val menuItems = listOf<Triple<Int, String, ImageVector>>(
+                    Triple(0, "Dashboard", Icons.Default.Shield),
+                    Triple(1, "İzolasyon (Sandbox)", Icons.Default.Lock),
+                    Triple(2, "Bölge Değiştirici", Icons.Default.Public),
+                    Triple(3, "Güvenlik Testi", Icons.Default.Info),
+                    Triple(4, "İzin Yönetimi", Icons.Default.Settings)
+                )
+
+                menuItems.forEach { (id, label, icon) ->
+                    NavigationDrawerItem(
+                        icon = { Icon(icon, contentDescription = null) },
+                        label = { Text(label, fontWeight = FontWeight.Bold) },
+                        selected = selectedScreen == id,
+                        onClick = {
+                            selectedScreen = id
+                            scope.launch { drawerState.close() }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            unselectedContainerColor = Color.Transparent,
+                            unselectedTextColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                            unselectedIconColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                         )
-                    },
-                    divider = {}
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTab == index,
-                            onClick = { selectedTab = index },
-                            text = {
-                                Text(
-                                    title,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium
-                                )
-                            },
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+                    )
                 }
             }
         }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            when (selectedTab) {
-                0 -> {
-                    // BAĞLANTI SEKİMESİ
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "Sistem Geneli Bağlantı",
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                            Text(
-                                "Tüm trafiği güvenli VPN tüneline alarak tam koruma sağlar.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
+    ) {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            when (selectedScreen) {
+                                0 -> "DASHBOARD"
+                                1 -> "İZOLASYON"
+                                2 -> "BÖLGE DEĞIŞTIRICI"
+                                3 -> "GÜVENLIK TESTI"
+                                else -> "İZİNLER"
+                            },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 2.sp
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menü")
                         }
-                        item {
-                            StatusCard(connectionState, activeServer, isBusy, isConnected, errorMsg)
-                        }
-                        item {
-                            // Butonlar
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Button(
-                                    onClick = onConnect,
-                                    enabled = !isBusy && !isConnected,
-                                    modifier = Modifier.weight(1f).height(56.dp),
-                                    shape = MaterialTheme.shapes.large,
-                                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                when (selectedScreen) {
+                    0 -> {
+                        // DASHBOARD: Verilen sıraya göre: Konum -> Durum -> Yönlendirme -> Liste -> Buton
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // 1. En Üstte Konum Bilgisi
+                            item {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text("Konum Bilgisi", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                IpStatusSection(viewModel = viewModel)
+                            }
+
+                            // 2. Akıllı Yönlendirme
+                            item {
+                                Text("Akıllı Yönlendirme", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                SmartRoutingSection(viewModel = viewModel, settings = truvaSettings)
+                            }
+
+                            // 4. VPN Sunucu Listesi
+                            item {
+                                Text("Sunucu Seçimi", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                            }
+                            items(proxies, key = { it.id }) { proxy ->
+                                ProxyRow(proxy, onSelect = { viewModel.selectProxy(proxy) }, onDelete = { viewModel.deleteProxy(proxy) })
+                            }
+
+                            // 4. En Altta Bağlan Butonu
+                            item {
+                                // Durum kartını buraya, butonun hemen üstüne taşıdık.
+                                StatusCard(connectionState, activeServer, isBusy, isConnected, errorMsg)
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-                                    if (isConnecting) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(20.dp),
-                                            strokeWidth = 2.dp,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                    Button(
+                                        onClick = onConnect,
+                                        enabled = !isBusy && !isConnected,
+                                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                                        shape = MaterialTheme.shapes.extraLarge,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF00695C), // Vibrant Teal
+                                            contentColor = Color.White
                                         )
-                                        Spacer(modifier = Modifier.width(12.dp))
+                                    ) {
+                                        if (isConnecting) {
+                                            CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 3.dp, color = Color.White)
+                                        } else {
+                                            Text(if (isConnected) "BAĞLI" else "BAĞLAN", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                                        }
                                     }
-                                    Text(if (isConnecting) "BAĞLANIYOR..." else "BAĞLAN", fontWeight = FontWeight.Bold)
                                 }
                                 if (isConnected) {
                                     Button(
                                         onClick = onDisconnect,
                                         enabled = !isBusy,
-                                        modifier = Modifier.weight(1f).height(56.dp),
+                                        modifier = Modifier.fillMaxWidth().height(56.dp).padding(bottom = 16.dp),
                                         shape = MaterialTheme.shapes.large,
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                            containerColor = Color(0xFFC62828), // Vibrant Red
+                                            contentColor = Color.White
                                         )
                                     ) {
-                                        Text("KES", fontWeight = FontWeight.Bold)
+                                        Text("BAĞLANTIYI KES", fontWeight = FontWeight.Black, color = Color.White)
                                     }
                                 }
+                                Spacer(modifier = Modifier.height(32.dp))
                             }
                         }
-                        item {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                            Text("Sunucu Seçimi", style = MaterialTheme.typography.titleMedium)
-                        }
-                        items(proxies, key = { it.id }) { proxy ->
-                            ProxyRow(proxy, onSelect = { viewModel.selectProxy(proxy) }, onDelete = { viewModel.deleteProxy(proxy) })
-                        }
-                        item { IpStatusSection(viewModel = viewModel) }
-                        item { Spacer(modifier = Modifier.height(32.dp)) }
                     }
-                }
-                1 -> {
-                    // UYGULAMALAR SEKİMESİ (Sandbox / Isolation)
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Uygulama İzolasyonu", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                            Text("İş profili kullanarak uygulamaları ana sistemden izole edin.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+                    1 -> {
+                        // UYGULAMA İZOLASYONU - Kaydırılabilir yapıldı
+                        LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            item { SandboxSection(viewModel = viewModel, settings = truvaSettings, onOpenIntegrityTest = { selectedScreen = 3 }) }
                         }
-                        item {
-                            SandboxSection(
-                                viewModel = viewModel,
-                                settings = truvaSettings,
-                                onOpenIntegrityTest = { selectedTab = 2 }
-                            )
-                        }
-                        item { Spacer(modifier = Modifier.height(32.dp)) }
                     }
-                }
-                2 -> {
-                    // GÜVENLİK SEKİMESİ (Spoofing, Routing, Integrity, Permissions)
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        item { Spacer(modifier = Modifier.height(16.dp)) }
-                        
-                        // 1. Akıllı Yönlendirme
-                        item {
-                            SectionHeader(
-                                title = "Akıllı Yönlendirme",
-                                description = "Trafik türüne göre yönlendirme modu",
-                                expanded = expandedSection == 1,
-                                onClick = { expandedSection = if (expandedSection == 1) -1 else 1 }
-                            )
+                    2 -> {
+                        // BÖLGE DEĞİŞTİRİCİ - Kaydırılabilir yapıldı
+                        LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            item { RegionProfileSection(viewModel = viewModel, settings = truvaSettings, spoofingStatus = spoofingStatus) }
                         }
-                        if (expandedSection == 1) item { SmartRoutingSection(viewModel = viewModel, settings = truvaSettings) }
-
-                        // 2. Bölge Spoofing
-                        item {
-                            SectionHeader(
-                                title = "Bölge Spoofing",
-                                description = "Cihaz kimlik bilgilerini değiştirin",
-                                expanded = expandedSection == 2,
-                                onClick = { expandedSection = if (expandedSection == 2) -1 else 2 }
-                            )
+                    }
+                    3 -> {
+                        // GÜVENLİK TESTİ - Kaydırılabilir yapıldı
+                        LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            item { ManipulationIntegrityScreen(viewModel = viewModel) }
                         }
-                        if (expandedSection == 2) item { RegionProfileSection(viewModel = viewModel, settings = truvaSettings, spoofingStatus = spoofingStatus) }
-
-                        // 3. Bütünlük Testi
-                        item {
-                            SectionHeader(
-                                title = "Sistem Bütünlük Testi",
-                                description = "Anlık manipülasyon durumunu kontrol edin",
-                                expanded = expandedSection == 4,
-                                onClick = { expandedSection = if (expandedSection == 4) -1 else 4 }
-                            )
+                    }
+                    4 -> {
+                        // İZİNLER - Kaydırılabilir yapıldı
+                        LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            item { Box(modifier = Modifier.fillMaxWidth().height(800.dp)) { com.truva.ui.PermissionDashboardScreen() } }
                         }
-                        if (expandedSection == 4) item { ManipulationIntegrityScreen(viewModel = viewModel) }
-
-                        // 4. İzinler
-                        item {
-                            SectionHeader(
-                                title = "İzinler ve Durum",
-                                description = "Gerekli yetkileri yönetin",
-                                expanded = expandedSection == 5,
-                                onClick = { expandedSection = if (expandedSection == 5) -1 else 5 }
-                            )
-                        }
-                        if (expandedSection == 5) {
-                            item { Box(modifier = Modifier.fillMaxWidth().height(400.dp)) { com.truva.ui.PermissionDashboardScreen() } }
-                        }
-                        item { Spacer(modifier = Modifier.height(32.dp)) }
                     }
                 }
             }
