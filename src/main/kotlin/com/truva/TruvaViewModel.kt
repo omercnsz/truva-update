@@ -65,6 +65,18 @@ class TruvaViewModel(
     val syncMessage: StateFlow<String?> = _syncMessage.asStateFlow()
 
     // ═══════════════════════════════════════════
+    // NAVİGASYON (Sekmeler)
+    // ═══════════════════════════════════════════
+
+    enum class TruvaTab { DASHBOARD, GAMING, NITRO_DPI }
+    private val _selectedTab = MutableStateFlow(TruvaTab.DASHBOARD)
+    val selectedTab: StateFlow<TruvaTab> = _selectedTab.asStateFlow()
+
+    fun selectTab(tab: TruvaTab) {
+        _selectedTab.value = tab
+    }
+
+    // ═══════════════════════════════════════════
     // PROXY
     // ═══════════════════════════════════════════
 
@@ -172,10 +184,11 @@ class TruvaViewModel(
         }
     }
 
-    /** Kazık Savar'dan deep link ile çağrılır — 3 saat ekler */
+    /** Kazık Savar'dan deep link ile çağrılır — 3 saat ekler (Süre varsa üzerine ekler) */
     fun activateSession() {
         viewModelScope.launch(Dispatchers.IO) {
-            val newExpiry = SessionManager.calculateNewExpiryTime()
+            val settings = currentSettings()
+            val newExpiry = SessionManager.calculateNewExpiryTime(settings.sessionExpiryTime)
             updateSetting { it.copy(sessionExpiryTime = newExpiry) }
             _isSessionActive.value = true
             android.util.Log.i("Truva", "Oturum aktive edildi! Bitiş: $newExpiry")
@@ -185,7 +198,6 @@ class TruvaViewModel(
                 applyPendingProtections(context)
 
                 // 2. Aktif bölge profili varsa spoofing katmanlarını yeniden uygula
-                val settings = dao.getSettingsFlow().firstOrNull() ?: SettingsEntity()
                 val profileId = settings.activeRegionProfileId
                 if (profileId != null && settings.isSpoofingEnabled) {
                     val profile = com.truva.spoofing.RegionProfile.findById(profileId)
@@ -237,6 +249,7 @@ class TruvaViewModel(
             app?.let { context ->
                 context.startService(
                     android.content.Intent(context, MyVpnService::class.java).apply {
+                        // Hem normal VPN'i hem Oyun Modunu kapatır
                         action = MyVpnService.ACTION_DISCONNECT
                     }
                 )
@@ -282,6 +295,64 @@ class TruvaViewModel(
     }
 
     // ═══════════════════════════════════════════
+    // OYUN MODU & UI STATE
+    // ═══════════════════════════════════════════
+
+    fun forceConnectingState() {
+        VpnStatusManager.update(VpnState.CONNECTING, "İzin Bekleniyor...")
+    }
+
+    fun forceIdleState() {
+        VpnStatusManager.update(VpnState.IDLE)
+    }
+
+    fun connectGameMode() {
+        if (!isSessionActive.value) return
+        
+        app?.let { context ->
+            val intent = android.content.Intent(context, MyVpnService::class.java).apply {
+                action = MyVpnService.ACTION_GAME_MODE_CONNECT
+            }
+            context.startService(intent)
+        }
+    }
+
+    fun disconnectGameMode() {
+        app?.let { context ->
+            val intent = android.content.Intent(context, MyVpnService::class.java).apply {
+                action = MyVpnService.ACTION_GAME_MODE_DISCONNECT
+            }
+            context.startService(intent)
+        }
+    }
+
+    // --- NITRO DPI (Yerel Paket Manipülasyonu) ---
+    fun connectNitroDpi() {
+        if (!isSessionActive.value) return
+        
+        app?.let { context ->
+            val intent = android.content.Intent(context, MyVpnService::class.java).apply {
+                action = MyVpnService.ACTION_NITRO_DPI_CONNECT
+            }
+            context.startService(intent)
+        }
+    }
+
+    fun disconnectNitroDpi() {
+        app?.let { context ->
+            val intent = android.content.Intent(context, MyVpnService::class.java).apply {
+                action = MyVpnService.ACTION_NITRO_DPI_DISCONNECT
+            }
+            context.startService(intent)
+        }
+    }
+
+
+    // ═══════════════════════════════════════════
+    // RADAR (On-device ADB)
+    // ═══════════════════════════════════════════
+
+    // ═══════════════════════════════════════════
     // AYARLAR
     // ═══════════════════════════════════════════
 
@@ -315,6 +386,8 @@ class TruvaViewModel(
         it.copy(isAntiDetectionEnabled = enabled)
     }
     fun setRoutingMode(mode: String) = updateSetting { it.copy(routingMode = mode) }
+    fun setNitroDpiAppMode(mode: String) = updateSetting { it.copy(nitroDpiAppMode = mode) }
+    fun setNitroDpiApps(apps: String) = updateSetting { it.copy(nitroDpiApps = apps) }
 
     private fun updateSetting(transform: (SettingsEntity) -> SettingsEntity) {
         viewModelScope.launch(Dispatchers.IO) { dao.updateSettings(transform(currentSettings())) }
@@ -455,7 +528,9 @@ class TruvaViewModel(
                 val currentVpnState = VpnStatusManager.status.value
                 val connection =
                         if (currentVpnState == VpnState.CONNECTED ||
-                                        currentVpnState == VpnState.CONNECTING
+                                        currentVpnState == VpnState.CONNECTING ||
+                                        currentVpnState == VpnState.GAMING ||
+                                        currentVpnState == VpnState.NITRO_DPI
                         ) {
                             val proxy =
                                     Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 10808))

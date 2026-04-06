@@ -7,7 +7,9 @@ enum class VpnState {
     CONNECTING,    // Bağlantı kuruluyor
     CONNECTED,     // Güvenli tünel aktif
     DISCONNECTING, // Bağlantı kesiliyor
-    ERROR          // Bir hata oluştu
+    ERROR,         // Bir hata oluştu
+    GAMING,        // Oyun Modu aktif
+    NITRO_DPI      // Nitro Oyun (Lokal DPI) aktif
 }
 
 // Servis ve UI arasında köprü kuracak Singleton

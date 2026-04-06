@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.lifecycleScope
 import com.truva.R
+import com.truva.nidg.NidgEngine
 import com.truva.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -59,12 +62,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var vpnLauncher: androidx.activity.result.ActivityResultLauncher<Intent>
+    private lateinit var gamingVpnLauncher: androidx.activity.result.ActivityResultLauncher<Intent>
     private lateinit var provisionLauncher: androidx.activity.result.ActivityResultLauncher<Intent>
     private lateinit var notificationPermissionLauncher:
             androidx.activity.result.ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // NIDG: Context'i ayarla (sinyal ve traceroute modülleri için gerekli)
+        NidgEngine.initialize(this)
 
         // Bildirim izni sonucu
         notificationPermissionLauncher =
@@ -92,6 +99,21 @@ class MainActivity : ComponentActivity() {
                                     action = MyVpnService.ACTION_CONNECT
                                 }
                         )
+                    } else {
+                        viewModel.forceIdleState()
+                    }
+                }
+
+        // Oyun Modu VPN izni sonucu
+        gamingVpnLauncher =
+                registerForActivityResult(
+                        androidx.activity.result.contract.ActivityResultContracts
+                                .StartActivityForResult()
+                ) { result ->
+                    if (result.resultCode == RESULT_OK) {
+                        viewModel.connectGameMode()
+                    } else {
+                        viewModel.forceIdleState()
                     }
                 }
 
@@ -109,80 +131,104 @@ class MainActivity : ComponentActivity() {
                     viewModel.onProvisioningResult(success)
                 }
 
+        // Sözleşme ve Başlangıç İzinleri Kontrolü
+        val prefs = getSharedPreferences("truva_prefs", MODE_PRIVATE)
+        var isAgreementAccepted by mutableStateOf(prefs.getBoolean("agreement_accepted", false))
+
         setContent {
             TruvaTheme {
-
-                // ViewModel'den gelen provisioning intent'ini yakala ve Activity'den başlat
-                val provisioningIntent by viewModel.provisioningIntent.collectAsState()
-                LaunchedEffect(provisioningIntent) {
-                    provisioningIntent?.let { intent ->
-                        viewModel.consumeProvisioningIntent()
-                        try {
-                            provisionLauncher.launch(intent)
-                        } catch (e: Exception) {
-                            Log.e("TruvaMain", "Provisioning intent hatası", e)
-                            Toast.makeText(
-                                            this@MainActivity,
-                                            "İş profili oluşturulamıyor: ${e.message}",
-                                            Toast.LENGTH_LONG
-                                    )
-                                    .show()
+                if (!isAgreementAccepted) {
+                    AgreementScreen(
+                        onAccept = {
+                            prefs.edit().putBoolean("agreement_accepted", true).apply()
+                            isAgreementAccepted = true
+                        },
+                        onReject = {
+                            finish() // Uygulamayı kapat
+                        }
+                    )
+                } else {
+                    // ViewModel'den gelen provisioning intent'ini yakala ve Activity'den başlat
+                    val provisioningIntent by viewModel.provisioningIntent.collectAsState()
+                    LaunchedEffect(provisioningIntent) {
+                        provisioningIntent?.let { intent ->
+                            viewModel.consumeProvisioningIntent()
+                            try {
+                                provisionLauncher.launch(intent)
+                            } catch (e: Exception) {
+                                Log.e("TruvaMain", "Provisioning intent hatası", e)
+                                Toast.makeText(
+                                                this@MainActivity,
+                                                "İş profili oluşturulamıyor: ${e.message}",
+                                                Toast.LENGTH_LONG
+                                        )
+                                        .show()
+                            }
                         }
                     }
-                }
 
-                // İş Profili/Sandbox Durumu için Başlangıç Kontrolü
-                LaunchedEffect(Unit) { viewModel.refreshSandboxStatus() }
+                    // İş Profili/Sandbox Durumu için Başlangıç Kontrolü
+                    LaunchedEffect(Unit) { viewModel.refreshSandboxStatus() }
 
-                Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                ) {
-                    // Oturum kontrolü
-                    val isSessionActive by viewModel.isSessionActive.collectAsState()
-                    val isInWorkProfile by viewModel.isInWorkProfile.collectAsState()
+                    Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                    ) {
+                        // Oturum kontrolü
+                        val isSessionActive by viewModel.isSessionActive.collectAsState()
+                        val isInWorkProfile by viewModel.isInWorkProfile.collectAsState()
 
-                    if (isSessionActive) {
-                        TruvaDashboard(
-                                viewModel = viewModel,
-                                onConnect = { startVpn() },
-                                onDisconnect = { stopVpn() }
-                        )
-                    } else {
-                        ExpiredScreen(
-                                isInWorkProfile = isInWorkProfile,
-                                onNavigateToGateway = {
-                                    if (isInWorkProfile) {
-                                        // İş profili → Ana profildeki Truva'yı aç (cross-profile intent)
-                                        try {
-                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("truvavpn://expired"))
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            startActivity(intent)
-                                        } catch (e: Exception) {
-                                            Toast.makeText(this@MainActivity, "Ana Truva açılamadı", Toast.LENGTH_SHORT).show()
-                                        }
-                                    } else {
-                                        // Ana profil → Kazık Savar'ı aç
-                                        try {
-                                            val launchIntent = packageManager.getLaunchIntentForPackage("com.kaziksavar.app")
-                                            if (launchIntent != null) {
-                                                startActivity(launchIntent)
-                                            } else {
-                                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.kaziksavar.app")))
+                        if (isSessionActive) {
+                            TruvaDashboard(
+                                    viewModel = viewModel,
+                                    onConnect = { startVpn() },
+                                    onDisconnect = { stopVpn() },
+                                    onGamingConnect = { startGamingVpn() }
+                            )
+                        } else {
+                            ExpiredScreen(
+                                    isInWorkProfile = isInWorkProfile,
+                                    onNavigateToGateway = {
+                                        if (isInWorkProfile) {
+                                            // İş profili → Ana profildeki Truva'yı aç (CrossProfileApps)
+                                            try {
+                                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                                                    val crossProfileApps = getSystemService(android.content.Context.CROSS_PROFILE_APPS_SERVICE) as android.content.pm.CrossProfileApps
+                                                    val targetUser = crossProfileApps.targetUserProfiles.firstOrNull()
+                                                    if (targetUser != null) {
+                                                        crossProfileApps.startMainActivity(componentName, targetUser)
+                                                    } else {
+                                                        android.widget.Toast.makeText(this@MainActivity, "Ana profil bulunamadı", android.widget.Toast.LENGTH_SHORT).show()
+                                                    }
+                                                } else {
+                                                    // API 28 altı için fallback (nadirdir)
+                                                    android.widget.Toast.makeText(this@MainActivity, "Lütfen ana profildeki Truva VPN'yi manuel açın", android.widget.Toast.LENGTH_LONG).show()
+                                                }
+                                            } catch (e: Exception) {
+                                                android.widget.Toast.makeText(this@MainActivity, "Ana Truva VPN açılamadı", android.widget.Toast.LENGTH_SHORT).show()
                                             }
-                                        } catch (e: Exception) {
-                                            Toast.makeText(this@MainActivity, "Kazık Savar uygulaması bulunamadı", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            // Ana profil → Kazık Savar'ı aç
+                                            try {
+                                                val launchIntent = packageManager.getLaunchIntentForPackage("com.kaziksavar.app")
+                                                if (launchIntent != null) {
+                                                    startActivity(launchIntent)
+                                                } else {
+                                                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.kaziksavar.app")))
+                                                }
+                                            } catch (e: Exception) {
+                                                Toast.makeText(this@MainActivity, "Kazık Savar uygulaması bulunamadı", Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                     }
-                                }
-                        )
+                            )
+                        }
                     }
                 }
             }
         }
 
         // Başlangıç İzinleri (Sadece ilk girişte sorulur)
-        val prefs = getSharedPreferences("truva_prefs", MODE_PRIVATE)
         if (!prefs.getBoolean("initial_permissions_asked", false)) {
             // 1. Android 13+ (API 33) için Bildirim İzni İste
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -216,6 +262,7 @@ class MainActivity : ComponentActivity() {
     // ═══════════════════════════════════════════
 
     private fun startVpn() {
+        viewModel.forceConnectingState()
         val intent = VpnService.prepare(this)
         if (intent != null) {
             vpnLauncher.launch(intent)
@@ -225,6 +272,15 @@ class MainActivity : ComponentActivity() {
                         action = MyVpnService.ACTION_CONNECT
                     }
             )
+        }
+    }
+
+    private fun startGamingVpn() {
+        val intent = VpnService.prepare(this)
+        if (intent != null) {
+            gamingVpnLauncher.launch(intent)
+        } else {
+            viewModel.connectGameMode()
         }
     }
 
@@ -261,7 +317,7 @@ class MainActivity : ComponentActivity() {
                 // 3. Versiyon Kontrolü
                 if (targetVersion > 0 && currentVersion < targetVersion) {
                     // Eğer uygulama eskiyse aktivasyonu reddet
-                    Toast.makeText(this, "❌ Truva sürümünüz eskidir. Lütfen güncelleyin!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "❌ Truva VPN sürümünüz eskidir. Lütfen güncelleyin!", Toast.LENGTH_LONG).show()
                 } else {
                     // Sürüm güncelse oturumu aç
                     viewModel.activateSession() 
@@ -355,7 +411,12 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit) {
+fun TruvaDashboard(
+    viewModel: TruvaViewModel,
+    onConnect: () -> Unit,
+    onDisconnect: () -> Unit,
+    onGamingConnect: () -> Unit
+) {
     val proxies by viewModel.allProxies.collectAsState()
     val connectionState by viewModel.connectionState.collectAsState(initial = VpnState.IDLE)
     val activeServer by viewModel.activeServerName.collectAsState(initial = null)
@@ -363,13 +424,23 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
     val truvaSettings by viewModel.settings.collectAsState()
     val spoofingStatus by viewModel.spoofingStatus.collectAsState()
 
+    val isInWorkProfile by viewModel.isInWorkProfile.collectAsState()
+    val selectedTab by viewModel.selectedTab.collectAsState()
+
     val isConnecting = connectionState == VpnState.CONNECTING
     val isConnected = connectionState == VpnState.CONNECTED
     val isDisconnecting = connectionState == VpnState.DISCONNECTING
     val isBusy = isConnecting || isDisconnecting
 
-    // Hangi ekran seçili
-    var selectedScreen by remember { mutableIntStateOf(0) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    LaunchedEffect(errorMsg) {
+        errorMsg?.let { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Hangi alt ekran (Dashboard içindeki Drawer menüsü geçişleri için)
+    var selectedDrawerItem by remember { mutableIntStateOf(0) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -399,7 +470,7 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        "v17.1.1 Premium",
+                        "v19.6.0 Premium",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -414,16 +485,18 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                     Triple(1, "İzolasyon (Sandbox)", Icons.Default.Lock),
                     Triple(2, "Bölge Değiştirici", Icons.Default.Public),
                     Triple(3, "Güvenlik Testi", Icons.Default.Info),
-                    Triple(4, "İzin Yönetimi", Icons.Default.Settings)
+                    Triple(4, "İzin Yönetimi", Icons.Default.Settings),
+                    Triple(5, "Ağ Analizi", Icons.Default.Analytics)
                 )
 
                 menuItems.forEach { (id, label, icon) ->
                     NavigationDrawerItem(
                         icon = { Icon(icon, contentDescription = null) },
                         label = { Text(label, fontWeight = FontWeight.Bold) },
-                        selected = selectedScreen == id,
+                        selected = selectedDrawerItem == id,
                         onClick = {
-                            selectedScreen = id
+                            selectedDrawerItem = id
+                            viewModel.selectTab(TruvaViewModel.TruvaTab.DASHBOARD)
                             scope.launch { drawerState.close() }
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
@@ -445,12 +518,21 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
-                            when (selectedScreen) {
-                                0 -> "DASHBOARD"
-                                1 -> "İZOLASYON"
-                                2 -> "BÖLGE DEĞIŞTIRICI"
-                                3 -> "GÜVENLIK TESTI"
-                                else -> "İZİNLER"
+                            if (selectedTab == TruvaViewModel.TruvaTab.GAMING) {
+                                "NİTRO GEÇİT"
+                            } else if (selectedTab == TruvaViewModel.TruvaTab.NITRO_DPI) {
+                                "NİTRO OYUN"
+                            } else {
+                                when (selectedDrawerItem) {
+                                    0 -> "DASHBOARD"
+                                    1 -> "İZOLASYON"
+                                    2 -> "BÖLGE DEĞIŞTIRICI"
+                                    3 -> "GÜVENLIK TESTI"
+                                    4 -> "İZİNLER"
+                                    5 -> "AĞ ANALİZİ"
+                                    6 -> "NIDG"
+                                    else -> "TRUVA VPN"
+                                }
                             },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Black,
@@ -462,11 +544,68 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                             Icon(Icons.Default.Menu, contentDescription = "Menü")
                         }
                     },
+                    actions = {
+                        val sessionActive by viewModel.isSessionActive.collectAsState()
+                        if (sessionActive) {
+                            val sessionRemaining by viewModel.remainingTimeFormatted.collectAsState()
+                            Surface(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = MaterialTheme.shapes.small,
+                                modifier = Modifier.padding(end = 12.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Timer,
+                                        contentDescription = "Kalan Süre",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = sessionRemaining,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            }
+                        }
+                    },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         titleContentColor = MaterialTheme.colorScheme.primary
                     )
                 )
+            },
+            bottomBar = {
+                if (isInWorkProfile) {
+                    NavigationBar(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 8.dp
+                    ) {
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Shield, contentDescription = null) },
+                            label = { Text("VPN") },
+                            selected = selectedTab == TruvaViewModel.TruvaTab.DASHBOARD,
+                            onClick = { viewModel.selectTab(TruvaViewModel.TruvaTab.DASHBOARD) }
+                        )
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Gamepad, contentDescription = null) },
+                            label = { Text("Nitro") },
+                            selected = selectedTab == TruvaViewModel.TruvaTab.GAMING,
+                            onClick = { viewModel.selectTab(TruvaViewModel.TruvaTab.GAMING) }
+                        )
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.SportsEsports, contentDescription = null) },
+                            label = { Text("Oyun") },
+                            selected = selectedTab == TruvaViewModel.TruvaTab.NITRO_DPI,
+                            onClick = { viewModel.selectTab(TruvaViewModel.TruvaTab.NITRO_DPI) }
+                        )
+                    }
+                }
             }
         ) { innerPadding ->
             Column(
@@ -474,30 +613,35 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                when (selectedScreen) {
-                    0 -> {
-                        // DASHBOARD: Verilen sıraya göre: Konum -> Durum -> Yönlendirme -> Liste -> Buton
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // 1. En Üstte Konum Bilgisi
-                            item {
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text("Konum Bilgisi", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                                IpStatusSection(viewModel = viewModel)
-                            }
+                if (selectedTab == TruvaViewModel.TruvaTab.GAMING) {
+                    GamingModeScreen(viewModel = viewModel, onConnect = onGamingConnect)
+                } else if (selectedTab == TruvaViewModel.TruvaTab.NITRO_DPI) {
+                    com.truva.ui.NitroDpiScreen(viewModel = viewModel, onConnect = { viewModel.connectNitroDpi() })
+                } else {
+                    when (selectedDrawerItem) {
+                        0 -> {
+                            // DASHBOARD: Verilen sıraya göre: Konum -> Durum -> Yönlendirme -> Liste -> Buton
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // 1. En Üstte Konum Bilgisi
+                                item {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text("Konum Bilgisi", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                    IpStatusSection(viewModel = viewModel)
+                                }
 
-                            // 2. Akıllı Yönlendirme
-                            item {
-                                Text("Akıllı Yönlendirme", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                                SmartRoutingSection(viewModel = viewModel, settings = truvaSettings)
-                            }
+                                // 2. Akıllı Yönlendirme
+                                item {
+                                    Text("Akıllı Yönlendirme", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                    SmartRoutingSection(viewModel = viewModel, settings = truvaSettings)
+                                }
 
-                            // 4. VPN Sunucu Listesi
-                            item {
-                                Text("Sunucu Seçimi", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                            }
+                                // 4. VPN Sunucu Listesi (3. Oyun Modu Buradan Kaldırıldı)
+                                item {
+                                    Text("Sunucu Seçimi", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                }
                             items(proxies, key = { it.id }) { proxy ->
                                 ProxyRow(proxy, onSelect = { viewModel.selectProxy(proxy) }, onDelete = { viewModel.deleteProxy(proxy) })
                             }
@@ -550,7 +694,7 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                     1 -> {
                         // UYGULAMA İZOLASYONU - Kaydırılabilir yapıldı
                         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                            item { SandboxSection(viewModel = viewModel, settings = truvaSettings, onOpenIntegrityTest = { selectedScreen = 3 }) }
+                            item { SandboxSection(viewModel = viewModel, settings = truvaSettings, onOpenIntegrityTest = { selectedDrawerItem = 3 }) }
                         }
                     }
                     2 -> {
@@ -571,10 +715,16 @@ fun TruvaDashboard(viewModel: TruvaViewModel, onConnect: () -> Unit, onDisconnec
                             item { Box(modifier = Modifier.fillMaxWidth().height(800.dp)) { com.truva.ui.PermissionDashboardScreen() } }
                         }
                     }
+                    5 -> {
+                        // AĞ ANALİZİ (NIDG)
+                        val nidgReport by NidgEngine.report.collectAsState()
+                        NidgDashboardScreen(report = nidgReport)
+                    }
                 }
             }
         }
     }
+}
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -594,6 +744,8 @@ fun StatusCard(
             VpnState.IDLE -> Triple(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant, "Bağlantı Yok")
             VpnState.CONNECTING -> Triple(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, "Bağlanıyor...")
             VpnState.CONNECTED -> Triple(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer, "Güvenli Tünel Aktif")
+            VpnState.GAMING -> Triple(Color(0xFF00E5FF), Color(0xFF1A237E), "Nitro Geçit: Aktif")
+            VpnState.NITRO_DPI -> Triple(Color(0xFFFFEA00), Color(0xFFD50000), "Nitro Oyun: 0 Ping DPI Aktif")
             VpnState.DISCONNECTING -> Triple(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, "Kesiliyor...")
             VpnState.ERROR -> Triple(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, "Bağlantı Hatası")
         }
@@ -613,7 +765,11 @@ fun StatusCard(
                 )
             } else {
                 Icon(
-                    imageVector = if (isConnected) Icons.Default.Lock else Icons.Default.Info,
+                    imageVector = when {
+                        state == VpnState.GAMING || state == VpnState.NITRO_DPI -> Icons.Default.Bolt
+                        isConnected -> Icons.Default.Lock
+                        else -> Icons.Default.Info
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
                     tint = contentColor
@@ -729,3 +885,5 @@ fun ProxyRow(proxy: ProxyEntity, onSelect: () -> Unit, onDelete: () -> Unit) {
         }
     }
 }
+
+

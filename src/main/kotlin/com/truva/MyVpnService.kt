@@ -10,6 +10,8 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.truva.nidg.NidgEngine
+import com.truva.nidg.NidgVpnManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -46,6 +48,7 @@ class MyVpnService : VpnService() {
     private var vpnInterface: ParcelFileDescriptor? = null
     private var connectJob: Job? = null
     private var isDisconnecting = false
+    private var isNidgMode = false  // NIDG analiz modunda mı?
 
     // ═══════════════════════════════════════════════════════════
     // Android Service Yaşam Döngüsü
@@ -53,8 +56,14 @@ class MyVpnService : VpnService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_CONNECT    -> connect()
-            ACTION_DISCONNECT -> disconnect()
+            ACTION_CONNECT         -> connect()
+            ACTION_DISCONNECT      -> disconnect()
+            ACTION_NIDG_CONNECT    -> connectNidg()
+            ACTION_NIDG_DISCONNECT -> disconnectNidg()
+            ACTION_GAME_MODE_CONNECT    -> connectGameMode()
+            ACTION_GAME_MODE_DISCONNECT -> disconnectGameMode()
+            ACTION_NITRO_DPI_CONNECT    -> connectNitroDpi()
+            ACTION_NITRO_DPI_DISCONNECT -> disconnectNitroDpi()
         }
         return START_STICKY
     }
@@ -71,6 +80,8 @@ class MyVpnService : VpnService() {
             try {
                 connectJob?.cancel()
                 connectJob = null
+                // NIDG: Analiz motorunu durdur
+                try { NidgEngine.stop() } catch (_: Exception) {}
                 // FD sahipliğini Java'dan ayır, Go kapatacak
                 try { vpnInterface?.detachFd() } catch (_: Exception) {}
                 vpnInterface = null
@@ -84,6 +95,7 @@ class MyVpnService : VpnService() {
             } catch (_: Exception) {}
             VpnStatusManager.update(VpnState.IDLE)
             isDisconnecting = false
+            stopSelf()
         }
     }
 
@@ -220,6 +232,17 @@ class MyVpnService : VpnService() {
                     // Bu sunucuyu seçili yap
                     dao.setActiveProxy(proxy.id)
 
+                    // ── NIDG: Ağ analiz motorunu başlat ──
+                    try {
+                        val nidgSettings = dao.getSettingsFlow().firstOrNull() ?: SettingsEntity()
+                        if (nidgSettings.isNidgEnabled) {
+                            NidgEngine.start(tun.fd)
+                            Log.i(TAG, "  📊 NIDG Engine başlatıldı")
+                        }
+                    } catch (e: Exception) {
+                        Log.w(TAG, "  NIDG başlatılamadı: ${e.message}")
+                    }
+
                     Log.i(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
                     Log.i(TAG, "✅ VPN BAĞLANDI: ${proxy.name}")
                     Log.i(TAG, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -251,6 +274,9 @@ class MyVpnService : VpnService() {
         // Ağır işleri (Go Stop) IO thread'e taşı — main thread'i bloklamaz
         serviceScope.launch(Dispatchers.IO) {
             try {
+                // NIDG: Analiz motorunu durdur
+                try { NidgEngine.stop() } catch (_: Exception) {}
+
                 // FD sahipliğini Java'dan ayır — Go kapatacak
                 try { vpnInterface?.detachFd() } catch (_: Exception) {}
                 vpnInterface = null
@@ -269,8 +295,19 @@ class MyVpnService : VpnService() {
             } catch (e: Exception) {
                 Log.e(TAG, "disconnect() hatası: ${e.message}", e)
             } finally {
+                // VPN veya Oyun Modu kapandığında İş Profilinde internet yasağını geri aç
+                try {
+                    val sandbox = com.truva.sandbox.TruvaSandbox.getInstance(this@MyVpnService)
+                    if (sandbox.isProfileOwner) {
+                        sandbox.workProfileManager.setVpnLockdown(true)
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "VPN Lockdown geri açılamadı: ${e.message}")
+                }
+
                 VpnStatusManager.update(VpnState.IDLE)
                 isDisconnecting = false
+                stopSelf()
             }
         }
     }
@@ -283,20 +320,45 @@ class MyVpnService : VpnService() {
     // → sonsuz döngü → bağlantı hatası
     // ═══════════════════════════════════════════════════════════
 
-    private fun createTun(): ParcelFileDescriptor? {
+    /**
+     * UNIFIED TUN — Tüm modlar (Normal, Oyun, NIDG) bu ana metod üzerinden TUN oluşturur.
+     * Bu sayede İş Profili / Lockdown politikaları ile %100 uyum sağlanır.
+     */
+    private fun createTun(allowedApps: List<String>? = null): ParcelFileDescriptor? {
         return try {
-            Builder()
-                .setSession("Truva VPN")
+            val builder = Builder()
+                .setSession("Truva VPN") // Tüm modlarda AYNI oturum adını kullan
                 .addAddress("10.0.0.2", 32)
-                .addRoute("0.0.0.0", 0) // Tüm IPv4 trafiği
-                // IPv6 satırları silindi!
+                .addRoute("0.0.0.0", 0) // Full-Tunnel (Work Profile Lockdown uyumluluğu için şart)
                 .addDnsServer("1.1.1.1")
                 .addDnsServer("8.8.8.8")
-                .addRoute("1.1.1.1", 32) // DNS rotası eklendi
-                .addRoute("8.8.8.8", 32) // DNS rotası eklendi
-                .setMtu(1280) // 1350'den 1280'e düşürüldü
-                .addDisallowedApplication(packageName)
-                .establish()
+                .addRoute("1.1.1.1", 32) // DNS trafiğini tünel içine zorla (Android resolver bypass'ı önler)
+                .addRoute("8.8.8.8", 32)
+                .setMtu(1280)
+
+            if (!allowedApps.isNullOrEmpty()) {
+                for (app in allowedApps) {
+                    if (app.isNotBlank()) {
+                        try {
+                            builder.addAllowedApplication(app.trim())
+                        } catch (e: Exception) {
+                            Log.w(TAG, "İzin verilen uygulama eklenemedi: $app")
+                        }
+                    }
+                }
+            } else {
+                builder.addDisallowedApplication(packageName)
+            }
+
+            if (Build.VERSION.SDK_INT >= 33) {
+                try {
+                    builder.javaClass.getMethod("allowIPv4Only").invoke(builder)
+                } catch (e: Exception) {
+                    Log.w(TAG, "allowIPv4Only yansıma hatası: ${e.message}")
+                }
+            }
+
+            builder.establish()
         } catch (e: Exception) {
             Log.e(TAG, "TUN oluşturma hatası: ${e.message}", e)
             null
@@ -305,44 +367,42 @@ class MyVpnService : VpnService() {
 
     // ═══════════════════════════════════════════════════════════
     // Minimal Xray Config
-    //
-    // En basit çalışan config:
-    //   - Inbound:  SOCKS5 (127.0.0.1:10808) + sniffing
-    //   - Outbound: VLESS (security/flow/network proxy'den gelir)
-    //   - DNS:      1.1.1.1 / 8.8.8.8
-    //   - Desteklenen: Reality, TLS, None / TCP, WS, gRPC
-    //   - Mux:      YOK (xtls-rprx-vision ile uyumsuz)
     // ═══════════════════════════════════════════════════════════
 
     private fun buildMinimalConfig(proxy: ProxyEntity): String {
         val config = JSONObject()
-
-        // Log
         config.put("log", JSONObject().put("loglevel", "warning"))
-
-        // DNS — Xray'in sniffing ile tespit ettiği domain'leri çözmesi için
         config.put("dns", JSONObject()
-            .put("servers", JSONArray()
-                .put("1.1.1.1")
-                .put("8.8.8.8")))
+            .put("servers", JSONArray().put("1.1.1.1").put("8.8.8.8")))
 
-        // Inbound: SOCKS5 + sniffing (TLS SNI / HTTP Host tespiti)
         val sniffing = JSONObject()
             .put("enabled", true)
             .put("destOverride", JSONArray().put("http").put("tls").put("quic"))
 
         val inbound = JSONObject()
-        inbound.put("tag", "socks-in")
-        inbound.put("port", 10808)
-        inbound.put("protocol", "socks")
-        inbound.put("listen", "127.0.0.1")
-        inbound.put("settings", JSONObject()
-            .put("auth", "noauth")
-            .put("udp", true))
-        inbound.put("sniffing", sniffing)
+            .put("tag", "socks-in")
+            .put("port", 10808)
+            .put("protocol", "socks")
+            .put("listen", "127.0.0.1")
+            .put("settings", JSONObject().put("auth", "noauth").put("udp", true))
+            .put("sniffing", sniffing)
         config.put("inbounds", JSONArray().put(inbound))
 
-        // Outbound: VLESS (security/flow/network proxy'den gelir)
+        val proxyOutbound = buildProxyOutbound(proxy)
+        config.put("outbounds", JSONArray().put(proxyOutbound))
+
+        config.put("routing", JSONObject()
+            .put("domainStrategy", "IPIfNonMatch")
+            .put("rules", JSONArray()
+                .put(JSONObject()
+                    .put("type", "field")
+                    .put("network", "tcp,udp")
+                    .put("outboundTag", "proxy"))))
+
+        return config.toString()
+    }
+
+    private fun buildProxyOutbound(proxy: ProxyEntity): JSONObject {
         val user = JSONObject()
             .put("id", proxy.uuid)
             .put("encryption", "none")
@@ -366,9 +426,7 @@ class MyVpnService : VpnService() {
                     .put("publicKey", proxy.publicKey)
                     .put("shortId", proxy.shortId)
                     .put("fingerprint", proxy.fingerprint)
-                if (proxy.password.isNotBlank()) {
-                    realitySettings.put("password", proxy.password)
-                }
+                if (proxy.password.isNotBlank()) realitySettings.put("password", proxy.password)
                 streamSettings.put("realitySettings", realitySettings)
             }
             "tls" -> {
@@ -378,49 +436,23 @@ class MyVpnService : VpnService() {
                     .put("allowInsecure", false)
                 streamSettings.put("tlsSettings", tlsSettings)
             }
-            // "none" → ek ayar gerekmez
         }
 
-        // WebSocket desteği
         if (proxy.network == "ws") {
-            val wsSettings = JSONObject()
-                .put("path", proxy.path)
-            if (proxy.sni.isNotBlank()) {
-                wsSettings.put("headers", JSONObject().put("Host", proxy.sni))
-            }
+            val wsSettings = JSONObject().put("path", proxy.path)
+            if (proxy.sni.isNotBlank()) wsSettings.put("headers", JSONObject().put("Host", proxy.sni))
             streamSettings.put("wsSettings", wsSettings)
         } else if (proxy.network == "grpc") {
             streamSettings.put("grpcSettings", JSONObject().put("serviceName", proxy.path))
         }
 
-        val proxyOutbound = JSONObject()
+        return JSONObject()
             .put("tag", "proxy")
             .put("protocol", "vless")
             .put("settings", JSONObject()
                 .put("vnext", JSONArray().put(vnext))
                 .put("udp", true))
             .put("streamSettings", streamSettings)
-
-        val directOutbound = JSONObject()
-            .put("tag", "direct")
-            .put("protocol", "freedom")
-
-        config.put("outbounds", JSONArray().put(proxyOutbound).put(directOutbound))
-
-        // Routing: tüm trafiği proxy'ye yönlendir
-        config.put("routing", JSONObject()
-            .put("domainStrategy", "IPIfNonMatch")
-            .put("rules", JSONArray()
-                .put(JSONObject()
-                    .put("type", "field")
-                    .put("port", "53")
-                    .put("outboundTag", "proxy"))
-                .put(JSONObject()
-                    .put("type", "field")
-                    .put("network", "tcp,udp")
-                    .put("outboundTag", "proxy"))))
-
-        return config.toString()
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -462,7 +494,523 @@ class MyVpnService : VpnService() {
         private const val TAG = "TruvaVPN"
         const val ACTION_CONNECT = "com.truva.vpn.CONNECT"
         const val ACTION_DISCONNECT = "com.truva.vpn.DISCONNECT"
+        const val ACTION_NIDG_CONNECT = "com.truva.nidg.CONNECT"
+        const val ACTION_NIDG_DISCONNECT = "com.truva.nidg.DISCONNECT"
+        const val ACTION_GAME_MODE_CONNECT = "com.truva.game.CONNECT"
+        const val ACTION_GAME_MODE_DISCONNECT = "com.truva.game.DISCONNECT"
+        const val ACTION_NITRO_DPI_CONNECT = "com.truva.nitrodpi.CONNECT"
+        const val ACTION_NITRO_DPI_DISCONNECT = "com.truva.nitrodpi.DISCONNECT"
         private const val CHANNEL_ID = "truva_vpn_channel"
+        private const val NIDG_CHANNEL_ID = "truva_nidg_channel"
         private const val NOTIFICATION_ID = 1
+        private const val NIDG_NOTIFICATION_ID = 1 // UNIFIED ID (Android 14+ uyumu için)
+        private const val GAME_MODE_NOTIFICATION_ID = 1 // UNIFIED ID (Android 14+ uyumu için)
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // NIDG Analiz VPN — Şeffaf Mod (Freedom Outbound)
+    // ═══════════════════════════════════════════════════════════
+
+    private fun connectNidg() {
+        // Ana VPN aktifse önce kes
+        if (vpnInterface != null && !isNidgMode) {
+            Log.w(TAG, "Ana VPN aktif — NIDG moduna geçilemez")
+            NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.MAIN_VPN_ACTIVE)
+            return
+        }
+
+        NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.CONNECTING)
+        isNidgMode = true
+        connectJob?.cancel()
+        startForeground(NIDG_NOTIFICATION_ID, buildNidgNotification("Bağlanıyor..."))
+
+        connectJob = serviceScope.launch(Dispatchers.IO) {
+            try {
+                Log.i(TAG, "━━━ NIDG Analiz VPN başlatılıyor ━━━")
+
+                // Xray'i freedom config ile başlat
+                val config = buildNidgTransparentConfig()
+                val initResult = Xray.Init(config)
+                if (initResult != 0) {
+                    Log.e(TAG, "NIDG Xray init hatası: ${Xray.lastError}")
+                    NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.IDLE)
+                    return@launch
+                }
+
+                // TUN oluştur
+                try { vpnInterface?.detachFd() } catch (_: Exception) {}
+                vpnInterface = null
+                val tun = createTun()
+                if (tun == null) {
+                    Log.e(TAG, "NIDG TUN oluşturulamadı")
+                    try { Xray.Stop() } catch (_: Exception) {}
+                    NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.IDLE)
+                    return@launch
+                }
+                vpnInterface = tun
+
+                // TUN → Netstack
+                val tunResult = Xray.SetTunFD(tun.fd)
+                if (tunResult != 0) {
+                    Log.e(TAG, "NIDG SetTunFD hatası: $tunResult")
+                    try { Xray.Stop() } catch (_: Exception) {}
+                    NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.IDLE)
+                    return@launch
+                }
+
+                // NIDG motorunu başlat
+                NidgEngine.start(tun.fd)
+
+                Log.i(TAG, "━━━ NIDG Analiz VPN AKTİF ━━━")
+                NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.ACTIVE)
+
+                // Bildirimi güncelle
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    nm.notify(NIDG_NOTIFICATION_ID, buildNidgNotification("Ağ analizi aktif — Mobil Veri"))
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "NIDG connect hatası: ${e.message}", e)
+                NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.IDLE)
+            }
+        }
+    }
+
+    private fun disconnectNidg() {
+        if (!isNidgMode) return
+        Log.i(TAG, "NIDG Analiz VPN durduruluyor...")
+
+        connectJob?.cancel()
+        connectJob = null
+
+        serviceScope.launch(Dispatchers.IO) {
+            try {
+                NidgEngine.stop()
+                try { vpnInterface?.detachFd() } catch (_: Exception) {}
+                vpnInterface = null
+                try { Xray.Stop() } catch (_: Exception) {}
+
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        stopForeground(true)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "NIDG disconnect hatası: ${e.message}", e)
+            } finally {
+                isNidgMode = false
+                NidgVpnManager.updateState(NidgVpnManager.NidgVpnState.IDLE)
+                Log.i(TAG, "NIDG Analiz VPN durduruldu")
+            }
+        }
+    }
+
+    /**
+     * NIDG Şeffaf Config — Tüm trafik freedom (direkt internet) üzerinden geçer.
+     * Proxy yok. Sadece TUN'dan okuma için.
+     */
+    private fun buildNidgTransparentConfig(): String {
+        val config = JSONObject()
+        config.put("log", JSONObject().put("loglevel", "warning"))
+        config.put("dns", JSONObject()
+            .put("servers", JSONArray().put("1.1.1.1").put("8.8.8.8")))
+
+        // Inbound: SOCKS5
+        val sniffing = JSONObject()
+            .put("enabled", true)
+            .put("destOverride", JSONArray().put("http").put("tls").put("quic"))
+        val inbound = JSONObject()
+            .put("tag", "socks-in")
+            .put("port", 10808)
+            .put("protocol", "socks")
+            .put("listen", "127.0.0.1")
+            .put("settings", JSONObject().put("auth", "noauth").put("udp", true))
+            .put("sniffing", sniffing)
+        config.put("inbounds", JSONArray().put(inbound))
+
+        // Outbound: SADECE freedom (direkt internet, proxy yok)
+        val freedomOutbound = JSONObject()
+            .put("tag", "direct")
+            .put("protocol", "freedom")
+            .put("settings", JSONObject().put("domainStrategy", "UseIP"))
+        config.put("outbounds", JSONArray().put(freedomOutbound))
+
+        // Routing: Tüm trafiği freedom'a yönlendir
+        config.put("routing", JSONObject()
+            .put("domainStrategy", "IPIfNonMatch")
+            .put("rules", JSONArray()
+                .put(JSONObject()
+                    .put("type", "field")
+                    .put("network", "tcp,udp")
+                    .put("outboundTag", "direct"))))
+
+        return config.toString()
+    }
+
+    /**
+     * NIDG sabit bildirimi — başlat/durdur aksiyonları ile.
+     */
+    private fun buildNidgNotification(text: String): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                NIDG_CHANNEL_ID, "Truva Ağ Analizi", NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                setShowBadge(false)
+                description = "NIDG ağ analiz motoru bildirimleri"
+            }
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+                .createNotificationChannel(channel)
+        }
+
+        val stopIntent = Intent(this, MyVpnService::class.java).apply {
+            action = ACTION_NIDG_DISCONNECT
+        }
+        val stopPending = PendingIntent.getService(
+            this, 100, stopIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Uygulama açma intent'i
+        val openIntent = packageManager.getLaunchIntentForPackage(packageName)
+        val openPending = if (openIntent != null) {
+            PendingIntent.getActivity(this, 101, openIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        } else null
+
+        val builder = NotificationCompat.Builder(this, NIDG_CHANNEL_ID)
+            .setContentTitle("📊 Ağ Analizi")
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_menu_info_details)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "DURDUR", stopPending)
+            .setOngoing(true)
+
+        if (openPending != null) {
+            builder.setContentIntent(openPending)
+        }
+
+        return builder.build()
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Oyun Modu — Düşük Ping (Freedom Outbound + Google DNS)
+    // ═══════════════════════════════════════════════════════════
+
+    private fun connectGameMode() {
+        if (vpnInterface != null) {
+            Log.w(TAG, "VPN zaten aktif — Oyun Modu başlatılamaz")
+            return
+        }
+
+        VpnStatusManager.update(VpnState.CONNECTING, "Oyun Modu Hazırlanıyor...")
+        connectJob?.cancel()
+        startForeground(NOTIFICATION_ID, buildGameModeNotification("Bağlanıyor..."))
+
+        connectJob = serviceScope.launch(Dispatchers.IO) {
+            try {
+                // SİSTEM GECİKMESİ: Önceki oturumun temizlenmesi ve sistemin yeni TUN'u kabul etmesi için bekleme
+                kotlinx.coroutines.delay(1800)
+                Log.i(TAG, "━━━ Oyun Modu başlatılıyor ━━━")
+
+                // ADIM 1: Proxy'yi bul (DNS'i proxy üzerinden geçirmek için)
+                val dao = AppDatabase.getDatabase(this@MyVpnService).appDao()
+                val activeProxy = dao.getAllProxiesList().find { it.isSelected }
+                    ?: dao.getAllProxiesList().firstOrNull()
+
+                // Xray'i hibrit (freedom + dns-via-proxy) config ile başlat
+                val config = buildGameModeConfig(activeProxy)
+                val initResult = Xray.Init(config)
+                if (initResult != 0) {
+                    fail("Oyun Modu Xray init hatası: ${Xray.lastError}")
+                    return@launch
+                }
+
+                // TUN oluştur
+                try { vpnInterface?.detachFd() } catch (_: Exception) {}
+                vpnInterface = null
+                
+                val tun: ParcelFileDescriptor?
+                try {
+                    tun = createTun()
+                } catch (e: Exception) {
+                    fail("Oyun Modu TUN Hatası: ${e.message}")
+                    return@launch
+                }
+                
+                if (tun == null) {
+                    fail("TUN null: VPN izni eksik veya sistem bağlamadı")
+                    return@launch
+                }
+                vpnInterface = tun
+
+                // TUN → Netstack
+                val tunResult = Xray.SetTunFD(tun.fd)
+                if (tunResult != 0) {
+                    fail("Oyun Modu SetTunFD hatası: $tunResult")
+                    return@launch
+                }
+
+                Log.i(TAG, "━━━ Oyun Modu AKTİF ━━━")
+                VpnStatusManager.update(VpnState.GAMING, "Nitro Geçit Aktif")
+
+                // Bildirimi güncelle
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    nm.notify(NOTIFICATION_ID, buildGameModeNotification("Oyun Modu Aktif — Düşük Ping"))
+                }
+
+            } catch (e: Exception) {
+                fail("Oyun Modu bağlantı hatası: ${e.message}")
+            }
+        }
+    }
+
+    private fun disconnectGameMode() {
+        Log.i(TAG, "Oyun Modu durduruluyor...")
+        disconnect() // Mevcut temizleme mantığını kullan
+    }
+
+    private fun buildGameModeConfig(proxy: ProxyEntity?): String {
+        val config = JSONObject()
+        config.put("log", JSONObject().put("loglevel", "warning"))
+        
+        // DNS: SADECE Google DNS (Xray içinden Proxy'ye yönlendirilecek)
+        config.put("dns", JSONObject()
+            .put("servers", JSONArray()
+                .put("8.8.8.8")
+                .put("8.8.4.4")))
+
+        // Inbound: SOCKS5
+        val sniffing = JSONObject()
+            .put("enabled", true)
+            .put("destOverride", JSONArray().put("http").put("tls").put("quic"))
+        val inbound = JSONObject()
+            .put("tag", "socks-in")
+            .put("port", 10808)
+            .put("protocol", "socks")
+            .put("listen", "127.0.0.1")
+            .put("settings", JSONObject().put("auth", "noauth").put("udp", true))
+            .put("sniffing", sniffing)
+        config.put("inbounds", JSONArray().put(inbound))
+
+        val outbounds = JSONArray()
+        
+        // Outbound 1: Freedom (Direkt internet, en düşük ping)
+        val freedomOutbound = JSONObject()
+            .put("tag", "direct")
+            .put("protocol", "freedom")
+            .put("settings", JSONObject().put("domainStrategy", "UseIP"))
+        outbounds.put(freedomOutbound)
+
+        // Outbound 2: Proxy (Sadece DNS sorguları için)
+        if (proxy != null) {
+            try {
+                val proxyJson = buildProxyOutbound(proxy)
+                outbounds.put(proxyJson)
+            } catch (e: Exception) {
+                Log.w(TAG, "Oyun Modu Proxy eklenemedi: ${e.message}")
+            }
+        }
+        
+        config.put("outbounds", outbounds)
+
+        // Routing Rules
+        val rules = JSONArray()
+        
+        // Kural 1: DNS trafiğini (Port 53) Proxy üzerinden gönder (sansür aşımı için)
+        if (proxy != null) {
+            rules.put(JSONObject()
+                .put("type", "field")
+                .put("port", 53)
+                .put("outboundTag", "proxy"))
+        }
+
+        // Kural 2: Geri kalan tüm trafiği doğrudan çıkışa yönlendir
+        rules.put(JSONObject()
+            .put("type", "field")
+            .put("network", "tcp,udp")
+            .put("outboundTag", "direct"))
+
+        config.put("routing", JSONObject()
+            .put("domainStrategy", "IPIfNonMatch")
+            .put("rules", rules))
+
+        return config.toString()
+    }
+
+    private fun buildGameModeNotification(text: String): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID, "Truva VPN", NotificationManager.IMPORTANCE_LOW
+            ).apply { setShowBadge(false) }
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+                .createNotificationChannel(channel)
+        }
+
+        val stopIntent = Intent(this, MyVpnService::class.java).apply {
+            action = ACTION_GAME_MODE_DISCONNECT
+        }
+        val stopPending = PendingIntent.getService(
+            this, 200, stopIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("🎮 Truva Oyun Modu")
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_lock_lock)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "KAPAT", stopPending)
+            .setOngoing(true)
+            .build()
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // NİTRO OYUN — MİNİMUM PİNG (LOKAL DPI BYPASS)
+    // ═══════════════════════════════════════════════════════════
+
+    private fun connectNitroDpi() {
+        if (vpnInterface != null) {
+            Log.w(TAG, "VPN zaten aktif — Nitro Oyun başlatılamaz")
+            return
+        }
+
+        VpnStatusManager.update(VpnState.CONNECTING, "Nitro Oyun Hazırlanıyor...")
+        connectJob?.cancel()
+        startForeground(NOTIFICATION_ID, buildNitroDpiNotification("Bağlanıyor..."))
+
+        connectJob = serviceScope.launch(Dispatchers.IO) {
+            try {
+                kotlinx.coroutines.delay(1800)
+                Log.i(TAG, "━━━ Nitro Oyun (Lokal DPI) başlatılıyor ━━━")
+
+                val dao = AppDatabase.getDatabase(this@MyVpnService).appDao()
+                val settings = dao.getSettingsFlow().firstOrNull() ?: SettingsEntity()
+
+                val config = buildNitroDpiConfig()
+                val initResult = Xray.Init(config)
+                if (initResult != 0) {
+                    fail("Nitro Oyun Xray init hatası: ${Xray.lastError}")
+                    return@launch
+                }
+
+                try { vpnInterface?.detachFd() } catch (_: Exception) {}
+                vpnInterface = null
+                
+                val allowedApps = if (settings.nitroDpiAppMode == "selected" && settings.nitroDpiApps.isNotBlank()) {
+                    settings.nitroDpiApps.split(",").map { it.trim() }
+                } else null
+
+                val tun: ParcelFileDescriptor?
+                try {
+                    tun = createTun(allowedApps)
+                } catch (e: Exception) {
+                    fail("Nitro Oyun TUN Hatası: ${e.message}")
+                    return@launch
+                }
+                
+                if (tun == null) {
+                    fail("TUN null: VPN izni eksik")
+                    return@launch
+                }
+                vpnInterface = tun
+
+                val tunResult = Xray.SetTunFD(tun.fd)
+                if (tunResult != 0) {
+                    fail("Nitro Oyun SetTunFD hatası: $tunResult")
+                    return@launch
+                }
+
+                Log.i(TAG, "━━━ Nitro Oyun (Lokal DPI) AKTİF ━━━")
+                VpnStatusManager.update(VpnState.NITRO_DPI, "Nitro Oyun (0 Ping) Aktif")
+
+                // Bildirimi güncelle
+                kotlinx.coroutines.withContext(Dispatchers.Main) {
+                    val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    nm.notify(NOTIFICATION_ID, buildNitroDpiNotification("Nitro Oyun Aktif — Yerel DPI & Sıfır Gecikme"))
+                }
+
+            } catch (e: Exception) {
+                fail("Nitro Oyun bağlantı hatası: ${e.message}")
+            }
+        }
+    }
+
+    private fun disconnectNitroDpi() {
+        Log.i(TAG, "Nitro Oyun durduruluyor...")
+        disconnect()
+    }
+
+    private fun buildNitroDpiConfig(): String {
+        val config = JSONObject()
+        config.put("log", JSONObject().put("loglevel", "warning"))
+        
+        config.put("dns", JSONObject()
+            .put("servers", JSONArray()
+                .put("8.8.8.8")
+                .put("1.1.1.1")))
+
+        val sniffing = JSONObject()
+            .put("enabled", true)
+            .put("destOverride", JSONArray().put("http").put("tls").put("quic"))
+        val inbound = JSONObject()
+            .put("tag", "socks-in")
+            .put("port", 10808)
+            .put("protocol", "socks")
+            .put("listen", "127.0.0.1")
+            .put("settings", JSONObject().put("auth", "noauth").put("udp", true))
+            .put("sniffing", sniffing)
+        config.put("inbounds", JSONArray().put(inbound))
+
+        val freedomOutbound = JSONObject()
+            .put("tag", "direct-fragment")
+            .put("protocol", "freedom")
+            .put("settings", JSONObject()
+                .put("domainStrategy", "UseIP")
+                .put("fragment", JSONObject()
+                    .put("packets", "tlshello")
+                    .put("length", "100-200")
+                    .put("interval", "10-20")
+                )
+            )
+
+        config.put("outbounds", JSONArray().put(freedomOutbound))
+        config.put("routing", JSONObject()
+            .put("domainStrategy", "IPIfNonMatch")
+            .put("rules", JSONArray()
+                .put(JSONObject()
+                    .put("type", "field")
+                    .put("network", "tcp,udp")
+                    .put("outboundTag", "direct-fragment"))))
+
+        return config.toString()
+    }
+
+    private fun buildNitroDpiNotification(text: String): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID, "Truva VPN", NotificationManager.IMPORTANCE_LOW
+            ).apply { setShowBadge(false) }
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+                .createNotificationChannel(channel)
+        }
+
+        val stopIntent = Intent(this, MyVpnService::class.java).apply {
+            action = ACTION_NITRO_DPI_DISCONNECT
+        }
+        val stopPending = PendingIntent.getService(
+            this, 300, stopIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("⚡ Nitro Oyun (Lokal DPI)")
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_lock_lock)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "KAPAT", stopPending)
+            .setOngoing(true)
+            .build()
     }
 }

@@ -23,9 +23,11 @@ object SessionManager {
         return if (remaining > 0) remaining else 0
     }
 
-    /** Yeni oturum bitiş zamanını hesaplar */
-    fun calculateNewExpiryTime(): Long {
-        return System.currentTimeMillis() + SESSION_DURATION_MS
+    /** Yeni oturum bitiş zamanını hesaplar (Kalan süre varsa üzerine ekler) */
+    fun calculateNewExpiryTime(currentExpiryTime: Long): Long {
+        val now = System.currentTimeMillis()
+        val baseTime = if (currentExpiryTime > now) currentExpiryTime else now
+        return baseTime + SESSION_DURATION_MS
     }
 
     /** Kalan süreyi "SS:DD:SS" formatında döndürür */

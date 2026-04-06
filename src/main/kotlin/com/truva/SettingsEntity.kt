@@ -34,5 +34,12 @@ data class SettingsEntity(
     val isSimMasked: Boolean = false,                  // AppOps tabanlı SIM gizleme
 
     // ── Oturum Yönetimi (Kazık Savar) ──
-    val sessionExpiryTime: Long = 0L                   // Oturum bitiş zamanı (epoch ms), 0 = aktif oturum yok
+    val sessionExpiryTime: Long = 0L,                  // Oturum bitiş zamanı (epoch ms), 0 = aktif oturum yok
+
+    // ── NIDG (Ağ Analizi) ──
+    val isNidgEnabled: Boolean = true,                   // Ağ analiz motoru aktif mi
+
+    // ── Nitro Oyun (Lokal DPI Bypass) ──
+    val nitroDpiAppMode: String = "all",                 // "all" veya "selected"
+    val nitroDpiApps: String = ""                        // Virgülle ayrılmış paket adları
 )

@@ -30,7 +30,7 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Truva"
+        android:label="Truva VPN"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar"
         android:usesCleartextTraffic="false"
@@ -64,6 +64,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="truvavpn" android:host="activate" />
+            </intent-filter>
+
+            <!-- Deep Link: Oturum süresi dolduğunda yönlendirme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="truvavpn" android:host="expired" />
             </intent-filter>
         </activity>
 

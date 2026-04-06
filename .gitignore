@@ -1,0 +1,28 @@
+# Gradle
+build/
+.gradle/
+*.class
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+.project
+.settings
+.classpath
+
+# Local Configuration
+local.properties
+
+# Logs
+*.log
+
+# Keystores (DO NOT VERSION)
+*.jks
+*.keystore
+
+# Built Binaries
+# truva.apk should be included if it's the distribution repo, 
+# but usually it's uploaded to Releases. 
+# I'll let it be untracked/ignored unless I explicitly add it.
+# truva.apk

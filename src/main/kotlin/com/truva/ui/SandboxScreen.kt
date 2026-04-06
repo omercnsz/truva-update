@@ -143,7 +143,7 @@ fun SandboxSection(
 
                                                 Spacer(modifier = Modifier.height(4.dp))
                                                 Text(
-                                                        if (bridgeOk) "🟢 Köprü bağlantısı aktif" else "🔴 Köprüye erişilemiyor — ana Truva açık mı?",
+                                                        if (bridgeOk) "🟢 Köprü bağlantısı aktif" else "🔴 Köprüye erişilemiyor — ana Truva VPN açık mı?",
                                                         style = MaterialTheme.typography.bodySmall,
                                                         color = if (bridgeOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
 
@@ -184,7 +184,7 @@ fun SandboxSection(
                                                         style = MaterialTheme.typography.bodySmall,
                                                         color = MaterialTheme.colorScheme.onTertiaryContainer)
                                                 Spacer(modifier = Modifier.height(4.dp))
-                                                Text("🟢 Köprü aktif — İş profilindeki Truva buradan veri çekebilir.",
+                                                Text("🟢 Köprü aktif — İş profilindeki Truva VPN buradan veri çekebilir.",
                                                         style = MaterialTheme.typography.bodySmall,
                                                         color = MaterialTheme.colorScheme.primary)
                                                 Spacer(modifier = Modifier.height(4.dp))
@@ -253,7 +253,7 @@ fun SandboxSection(
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(
                                                 text =
-                                                        if (adbConnected) "Truva Motoru Bağlı"
+                                                        if (adbConnected) "Truva VPN Motoru Bağlı"
                                                         else "ADB Bağlantısı Kesildi",
                                                 color =
                                                         if (adbConnected) MaterialTheme.colorScheme.onPrimaryContainer
@@ -388,7 +388,7 @@ fun SandboxSection(
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "Truva uygulamasını yukarıdan korumaya alıp ('Korumalı' yapıp), ardından aşağıdaki test butonuna basarak korumanın çalıştığını doğrulayabilirsiniz.",
+                                    text = "Truva VPN uygulamasını yukarıdan korumaya alıp ('Korumalı' yapıp), ardından aşağıdaki test butonuna basarak korumanın çalıştığını doğrulayabilirsiniz.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

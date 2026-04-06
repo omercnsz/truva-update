@@ -1,4 +1,4 @@
-# Truva – Kotlin Projesi
+# Truva VPN – Kotlin Projesi
 
 Gradle ile oluşturulmuş basit bir Kotlin projesi.
 

@@ -51,7 +51,7 @@ fun PermissionDashboardScreen() {
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Truva'nın kusursuz çalışması için aşağıdaki izinlerin açık ve arka plan kısıtlamalarının kapalı olması gerekir.",
+            text = "Truva VPN'in kusursuz çalışması için aşağıdaki izinlerin açık ve arka plan kısıtlamalarının kapalı olması gerekir.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.outline
         )
@@ -60,7 +60,7 @@ fun PermissionDashboardScreen() {
         // 1. Pil Optimizasyonu
         PermissionItem(
             title = "Pil Optimizasyonunu Kapat",
-            description = "Bağlantının arka planda kopmaması için Truva'yı 'Kısıtlanmamış' olarak ayarlayın.",
+            description = "Bağlantının arka planda kopmaması için Truva VPN'i 'Kısıtlanmamış' olarak ayarlayın.",
             isGranted = isBatteryOptimized,
             icon = Icons.Default.BatteryStd,
             onActionClick = {
@@ -118,7 +118,7 @@ fun PermissionDashboardScreen() {
 
         PermissionItem(
             title = "Sahte Konum (Mock Location)",
-            description = "GPS Spoofing için Geliştirici Seçeneklerinden Truva'yı 'Sahte Konum Seçilen Uygulama' yapın.",
+            description = "GPS Spoofing için Geliştirici Seçeneklerinden Truva VPN'i 'Sahte Konum Seçilen Uygulama' yapın.",
             isGranted = isMockLocationEnabled,
             icon = Icons.Default.LocationOn,
             buttonText = "Geliştirici Ayarları'na Git",

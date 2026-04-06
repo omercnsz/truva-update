@@ -173,7 +173,7 @@ fun RegionProfileSection(
                         )
                     }
                     Text(
-                        "GPS Spoofing için Geliştirici Seçenekleri -> 'Sahte konum uygulaması' -> Truva seçilmelidir.",
+                        "GPS Spoofing için Geliştirici Seçenekleri -> 'Sahte konum uygulaması' -> Truva VPN seçilmelidir.",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(top = 4.dp)
                     )
@@ -233,7 +233,7 @@ fun RegionProfileSection(
             )
             SpoofInfoText(
                 "⚠ Kısmi: Her oturumda rastgele sahte cihaz kimliği üretilir. " +
-                "Truva içinde geçerlidir ancak diğer uygulamalar kendi gerçek ID'lerini okur. " +
+                "Truva VPN içinde geçerlidir ancak diğer uygulamalar kendi gerçek ID'lerini okur. " +
                 "Tam çalışması için root + Xposed gerekir."
             )
 

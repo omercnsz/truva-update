@@ -8,7 +8,7 @@ import java.util.Properties
 import java.io.FileInputStream
 
 group = "com.truva"
-version = "19.1.1"
+version = "19.8.0"
 
 android {
     namespace = "com.truva"
@@ -18,8 +18,8 @@ android {
         applicationId = "com.truva"
         minSdk = 24
         targetSdk = 34
-        versionCode = 29
-        versionName = version as String
+        versionCode = 46
+        versionName = "19.8.0"
     }
 
     testOptions {
@@ -105,6 +105,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     // include xray gomobile aar if present (avoid failure when file missing)
     val xrayAar = file("libs/xray.aar")
