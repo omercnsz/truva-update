@@ -334,7 +334,9 @@ class MyVpnService : VpnService() {
                 .addDnsServer("8.8.8.8")
                 .addRoute("1.1.1.1", 32) // DNS trafiğini tünel içine zorla (Android resolver bypass'ı önler)
                 .addRoute("8.8.8.8", 32)
-                .setMtu(1280)
+                .addAddress("fd00::1", 128) // IPv6 Sızıntısını önlemek için sanal adres
+                .addRoute("::", 0) // Tüm IPv6 trafiğini tünel içine çek
+                .setMtu(1280) // IPv6 uyumluluğu için MTU optimizasyonu
 
             if (!allowedApps.isNullOrEmpty()) {
                 for (app in allowedApps) {
@@ -348,14 +350,6 @@ class MyVpnService : VpnService() {
                 }
             } else {
                 builder.addDisallowedApplication(packageName)
-            }
-
-            if (Build.VERSION.SDK_INT >= 33) {
-                try {
-                    builder.javaClass.getMethod("allowIPv4Only").invoke(builder)
-                } catch (e: Exception) {
-                    Log.w(TAG, "allowIPv4Only yansıma hatası: ${e.message}")
-                }
             }
 
             builder.establish()
