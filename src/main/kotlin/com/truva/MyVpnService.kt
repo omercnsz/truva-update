@@ -336,7 +336,7 @@ class MyVpnService : VpnService() {
                 .addRoute("8.8.8.8", 32)
                 .addAddress("fd00::1", 128) // IPv6 Sızıntısını önlemek için sanal adres
                 .addRoute("::", 0) // Tüm IPv6 trafiğini tünel içine çek
-                .setMtu(1280) // IPv6 uyumluluğu için MTU optimizasyonu
+                .setMtu(1200) // TT DPI tamponlarını şaşırtmak için MTU düşürüldü (DPI Desync)
 
             if (!allowedApps.isNullOrEmpty()) {
                 for (app in allowedApps) {
@@ -977,8 +977,8 @@ class MyVpnService : VpnService() {
                 .put("domainStrategy", "UseIP")
                 .put("fragment", JSONObject()
                     .put("packets", "all")
-                    .put("length", "1-3")
-                    .put("interval", "10-20")
+                    .put("length", "1-10")
+                    .put("interval", "5-30")
                 )
             )
         outbounds.put(freedomOutbound)
