@@ -334,9 +334,20 @@ class MyVpnService : VpnService() {
                 .addDnsServer("8.8.8.8")
                 .addRoute("1.1.1.1", 32) // DNS trafiğini tünel içine zorla (Android resolver bypass'ı önler)
                 .addRoute("8.8.8.8", 32)
-                .addAddress("fd00::1", 128) // IPv6 Sızıntısını önlemek için sanal adres
-                .addRoute("::", 0) // Tüm IPv6 trafiğini tünel içine çek
-                .setMtu(1200) // TT DPI tamponlarını şaşırtmak için MTU düşürüldü (DPI Desync)
+                .setMtu(1280) // Uyumluluk için standart MTU değeri (IPv6 alt sınırı)
+
+            // IPv6 Sızıntı Koruması (Cihaz desteklemiyorsa otomatik atla)
+            try {
+                builder.addAddress("fd00::1", 128)
+                builder.addRoute("::", 0)
+            } catch (e: Exception) {
+                Log.w(TAG, "IPv6 tünelleme desteklenmiyor, IPv4 moduna zorlanıyor: ${e.message}")
+                if (Build.VERSION.SDK_INT >= 33) {
+                    try {
+                        builder.javaClass.getMethod("allowIPv4Only").invoke(builder)
+                    } catch (_: Exception) {}
+                }
+            }
 
             if (!allowedApps.isNullOrEmpty()) {
                 for (app in allowedApps) {
