@@ -951,12 +951,19 @@ class MyVpnService : VpnService() {
         val config = JSONObject()
         config.put("log", JSONObject().put("loglevel", "warning"))
         
-        config.put("dns", JSONObject()
-            .put("servers", getDnsServers(isDoh)))
+        config.put("dns", JSONObject().apply {
+            put("servers", getDnsServers(isDoh).apply {
+                put("fakedns")
+            })
+            put("queryStrategy", "UseIPv4")
+        })
 
         val sniffing = JSONObject()
             .put("enabled", true)
             .put("destOverride", JSONArray().put("http").put("tls").put("quic"))
+            .put("metadataOnly", false)
+            .put("routeOnly", true)
+
         val inbound = JSONObject()
             .put("tag", "socks-in")
             .put("port", 10808)
@@ -966,6 +973,9 @@ class MyVpnService : VpnService() {
             .put("sniffing", sniffing)
         config.put("inbounds", JSONArray().put(inbound))
 
+        val outbounds = JSONArray()
+        
+        // Outbound 1: Fragmented Direct (TCP)
         val freedomOutbound = JSONObject()
             .put("tag", "direct-fragment")
             .put("protocol", "freedom")
@@ -977,15 +987,34 @@ class MyVpnService : VpnService() {
                     .put("interval", "10-20")
                 )
             )
+        outbounds.put(freedomOutbound)
 
-        config.put("outbounds", JSONArray().put(freedomOutbound))
+        // Outbound 2: Block (UDP 443 / QUIC)
+        val blockOutbound = JSONObject()
+            .put("tag", "block")
+            .put("protocol", "blackhole")
+        outbounds.put(blockOutbound)
+
+        config.put("outbounds", outbounds)
+        
+        val rules = JSONArray()
+        
+        // Kural 1: QUIC Engelle (UDP 443) -> Uygulamayı TCP'ye zorla
+        rules.put(JSONObject()
+            .put("type", "field")
+            .put("port", 443)
+            .put("network", "udp")
+            .put("outboundTag", "block"))
+
+        // Kural 2: Geri kalan her şeyi parçalayarak gönder
+        rules.put(JSONObject()
+            .put("type", "field")
+            .put("network", "tcp,udp")
+            .put("outboundTag", "direct-fragment"))
+
         config.put("routing", JSONObject()
             .put("domainStrategy", "IPIfNonMatch")
-            .put("rules", JSONArray()
-                .put(JSONObject()
-                    .put("type", "field")
-                    .put("network", "tcp,udp")
-                    .put("outboundTag", "direct-fragment"))))
+            .put("rules", rules))
 
         return config.toString()
     }
