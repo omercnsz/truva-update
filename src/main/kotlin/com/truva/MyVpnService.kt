@@ -334,7 +334,7 @@ class MyVpnService : VpnService() {
                 .addDnsServer("8.8.8.8")
                 .addRoute("1.1.1.1", 32) // DNS trafiğini tünel içine zorla (Android resolver bypass'ı önler)
                 .addRoute("8.8.8.8", 32)
-                .setMtu(1300) // Mobil veri uyumluluğu için MTU optimize edildi
+                .setMtu(1280) // Uyumluluk için standart MTU değeri (IPv6 alt sınırı)
 
             // IPv6 Sızıntı Koruması (Cihaz desteklemiyorsa otomatik atla)
             try {
@@ -980,7 +980,7 @@ class MyVpnService : VpnService() {
 
         val outbounds = JSONArray()
         
-        // Outbound 1: Atomic Fragment (Immortal Nitro)
+        // Outbound 1: Ghost Fragment (v20.0.2 - Ghost in the Machine)
         val freedomOutbound = JSONObject()
             .put("tag", "fragment-out")
             .put("protocol", "freedom")
@@ -988,14 +988,17 @@ class MyVpnService : VpnService() {
                 .put("domainStrategy", "UseIP")
                 .put("fragment", JSONObject()
                     .put("packets", "tlshello")
-                    .put("length", "1-2")
-                    .put("interval", "20-50")
+                    .put("length", "3-5")
+                    .put("interval", "50-100")
                 )
             )
             .put("streamSettings", JSONObject()
                 .put("sockopt", JSONObject().put("tcpNoDelay", true).put("mark", 255))
                 .put("security", "tls")
-                .put("tlsSettings", JSONObject().put("fingerprint", "chrome"))
+                .put("tlsSettings", JSONObject()
+                    .put("fingerprint", "chrome")
+                    .put("alpn", JSONArray().put("h2").put("http/1.1"))
+                )
             )
         outbounds.put(freedomOutbound)
 
