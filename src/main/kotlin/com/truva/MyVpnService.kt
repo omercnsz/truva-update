@@ -992,6 +992,11 @@ class MyVpnService : VpnService() {
                     .put("interval", "20-50")
                 )
             )
+            .put("streamSettings", JSONObject()
+                .put("sockopt", JSONObject().put("tcpNoDelay", true).put("mark", 255))
+                .put("security", "tls")
+                .put("tlsSettings", JSONObject().put("fingerprint", "chrome"))
+            )
         outbounds.put(freedomOutbound)
 
         // Outbound 2: Block (UDP 443 / QUIC)
