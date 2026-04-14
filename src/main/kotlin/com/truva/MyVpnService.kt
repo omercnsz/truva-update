@@ -334,7 +334,7 @@ class MyVpnService : VpnService() {
                 .addDnsServer("8.8.8.8")
                 .addRoute("1.1.1.1", 32) // DNS trafiğini tünel içine zorla (Android resolver bypass'ı önler)
                 .addRoute("8.8.8.8", 32)
-                .setMtu(1280) // Uyumluluk için standart MTU değeri (IPv6 alt sınırı)
+                .setMtu(1300) // Mobil veri uyumluluğu için MTU optimize edildi
 
             // IPv6 Sızıntı Koruması (Cihaz desteklemiyorsa otomatik atla)
             try {
@@ -980,16 +980,16 @@ class MyVpnService : VpnService() {
 
         val outbounds = JSONArray()
         
-        // Outbound 1: Fragmented Direct (TCP)
+        // Outbound 1: Fragmented Freedom (Local Bypass)
         val freedomOutbound = JSONObject()
-            .put("tag", "direct-fragment")
+            .put("tag", "fragment")
             .put("protocol", "freedom")
             .put("settings", JSONObject()
                 .put("domainStrategy", "UseIP")
                 .put("fragment", JSONObject()
-                    .put("packets", "all")
+                    .put("packets", "tlshello,http")
                     .put("length", "1-2")
-                    .put("interval", "10-30")
+                    .put("interval", "20-40")
                 )
             )
         outbounds.put(freedomOutbound)
@@ -1011,14 +1011,21 @@ class MyVpnService : VpnService() {
             .put("network", "udp")
             .put("outboundTag", "block"))
 
-        // Kural 2: Geri kalan her şeyi parçalayarak gönder
+        // Kural 2: Wattpad / Google Sızıntı Koruması (Stres Testi İçin)
+        rules.put(JSONObject()
+            .put("type", "field")
+            .put("ip", JSONArray().put("216.239.32.0/20"))
+            .put("domain", JSONArray().put("wattpad.com").put("domain:wattpad.com"))
+            .put("outboundTag", "fragment"))
+
+        // Kural 3: Geri kalan her şeyi parçalayarak gönder (Catch-all)
         rules.put(JSONObject()
             .put("type", "field")
             .put("network", "tcp,udp")
-            .put("outboundTag", "direct-fragment"))
+            .put("outboundTag", "fragment"))
 
         config.put("routing", JSONObject()
-            .put("domainStrategy", "IPIfNonMatch")
+            .put("domainStrategy", "AsIs")
             .put("rules", rules))
 
         return config.toString()
