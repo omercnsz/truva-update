@@ -8,7 +8,7 @@ import java.util.Properties
 import java.io.FileInputStream
 
 group = "com.truva"
-version = "19.9.9"
+version = "20.0.0"
 
 android {
     namespace = "com.truva"
@@ -18,8 +18,8 @@ android {
         applicationId = "com.truva"
         minSdk = 24
         targetSdk = 34
-        versionCode = 55
-        versionName = "19.9.9"
+        versionCode = 56
+        versionName = "20.0.0"
     }
 
     testOptions {
