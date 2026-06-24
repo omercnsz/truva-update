@@ -48,6 +48,10 @@ class MyVpnService : VpnService() {
     private var vpnInterface: ParcelFileDescriptor? = null
     private var connectJob: Job? = null
     private var isDisconnecting = false
+
+    // Nitro Oyun manipülasyon proxy'si (TruvaRun SNI-split). Xray bu yerel
+    // SOCKS proxy'ye outbound olarak bağlanır; proxy ClientHello'yu manipüle eder.
+    private var desyncProxy: com.truva.gamemode.DesyncProxy? = null
     private var isNidgMode = false  // NIDG analiz modunda mı?
 
     // ═══════════════════════════════════════════════════════════
@@ -283,6 +287,9 @@ class MyVpnService : VpnService() {
 
                 // Go: goroutine'ler durdur → cleanup (tunFile, linkEndpoint, ipStack, xray)
                 try { Xray.Stop() } catch (_: Exception) {}
+                // Manipülasyon proxy'sini de durdur.
+                try { desyncProxy?.stop() } catch (_: Exception) {}
+                desyncProxy = null
 
                 kotlinx.coroutines.withContext(Dispatchers.Main) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -505,6 +512,8 @@ class MyVpnService : VpnService() {
         const val ACTION_GAME_MODE_DISCONNECT = "com.truva.game.DISCONNECT"
         const val ACTION_NITRO_DPI_CONNECT = "com.truva.nitrodpi.CONNECT"
         const val ACTION_NITRO_DPI_DISCONNECT = "com.truva.nitrodpi.DISCONNECT"
+        // Nitro Oyun manipülasyon (DesyncProxy) yerel SOCKS portu — Xray buraya çıkış yapar.
+        private const val DESYNC_PROXY_PORT = 10809
         private const val CHANNEL_ID = "truva_vpn_channel"
         private const val NIDG_CHANNEL_ID = "truva_nidg_channel"
         private const val NOTIFICATION_ID = 1
@@ -898,6 +907,15 @@ class MyVpnService : VpnService() {
                 val dao = AppDatabase.getDatabase(this@MyVpnService).appDao()
                 val settings = dao.getSettingsFlow().firstOrNull() ?: SettingsEntity()
 
+                // Manipülasyon proxy'sini başlat (TruvaRun SNI-split). Xray çıkışı
+                // buraya yönlenir → tüm cihaz trafiğine bizim manipülasyon uygulanır.
+                try { desyncProxy?.stop() } catch (_: Exception) {}
+                desyncProxy = com.truva.gamemode.DesyncProxy(
+                    listenPort = DESYNC_PROXY_PORT,
+                    // OOB_SPLIT = root'suz en güçlü: SNI ortadan böl + araya OOB bayt.
+                    strategy = com.truva.gamemode.DesyncProxy.Strategy.OOB_SPLIT,
+                ).also { it.start() }
+
                 val config = buildNitroDpiConfig(settings.isDohEnabled)
                 val initResult = Xray.Init(config)
                 if (initResult != 0) {
@@ -979,28 +997,26 @@ class MyVpnService : VpnService() {
         config.put("inbounds", JSONArray().put(inbound))
 
         val outbounds = JSONArray()
-        
-        // Outbound 1: Ghost Fragment (v20.0.2 - Ghost in the Machine)
-        val freedomOutbound = JSONObject()
+
+        // Outbound 1: TruvaRun manipülasyonu (DesyncProxy SNI-split).
+        // Xray'in kendi `fragment`i yerine, tüm TCP trafiğini yerel DesyncProxy'ye
+        // (SOCKS) yönlendiriyoruz; manipülasyon (ClientHello SNI ortadan bölme)
+        // orada uygulanır. tag "fragment-out" KORUNDU — alttaki routing kuralları
+        // değişmeden çalışsın diye.
+        val desyncOutbound = JSONObject()
             .put("tag", "fragment-out")
-            .put("protocol", "freedom")
+            .put("protocol", "socks")
             .put("settings", JSONObject()
-                .put("domainStrategy", "UseIP")
-                .put("fragment", JSONObject()
-                    .put("packets", "tlshello")
-                    .put("length", "3-5")
-                    .put("interval", "50-100")
-                )
+                .put("servers", JSONArray().put(
+                    JSONObject()
+                        .put("address", "127.0.0.1")
+                        .put("port", DESYNC_PROXY_PORT)
+                ))
             )
             .put("streamSettings", JSONObject()
-                .put("sockopt", JSONObject().put("tcpNoDelay", true).put("mark", 255))
-                .put("security", "tls")
-                .put("tlsSettings", JSONObject()
-                    .put("fingerprint", "chrome")
-                    .put("alpn", JSONArray().put("h2").put("http/1.1"))
-                )
+                .put("sockopt", JSONObject().put("tcpNoDelay", true))
             )
-        outbounds.put(freedomOutbound)
+        outbounds.put(desyncOutbound)
 
         // Outbound 2: Block (UDP 443 / QUIC)
         val blockOutbound = JSONObject()
@@ -1008,10 +1024,20 @@ class MyVpnService : VpnService() {
             .put("protocol", "blackhole")
         outbounds.put(blockOutbound)
 
+        // Outbound 3: Direct (freedom) — UDP trafiği (oyun/ses) manipülasyonsuz
+        // doğrudan çıkar. DesyncProxy yalnızca TCP işler; UDP buradan gider.
+        val directOutbound = JSONObject()
+            .put("tag", "direct")
+            .put("protocol", "freedom")
+            .put("settings", JSONObject().put("domainStrategy", "UseIP"))
+            .put("streamSettings", JSONObject()
+                .put("sockopt", JSONObject().put("tcpNoDelay", true)))
+        outbounds.put(directOutbound)
+
         config.put("outbounds", outbounds)
-        
+
         val rules = JSONArray()
-        
+
         // Kural 1: QUIC Engelle (UDP 443) -> Uygulamayı TCP'ye zorla
         rules.put(JSONObject()
             .put("type", "field")
@@ -1030,11 +1056,17 @@ class MyVpnService : VpnService() {
                 .put("domain:wattpad.net"))
             .put("outboundTag", "fragment-out"))
 
-        // Kural 3: Mutlak Yakalayıcı (Hiçbir paket sızamaz)
+        // Kural 3: TÜM TCP -> manipülasyon proxy'si (DesyncProxy SNI-split)
         rules.put(JSONObject()
             .put("type", "field")
-            .put("network", "tcp,udp")
+            .put("network", "tcp")
             .put("outboundTag", "fragment-out"))
+
+        // Kural 4: Kalan UDP (443 dışı: oyun/ses) -> düz çıkış (manipülasyonsuz)
+        rules.put(JSONObject()
+            .put("type", "field")
+            .put("network", "udp")
+            .put("outboundTag", "direct"))
 
         config.put("routing", JSONObject()
             .put("domainStrategy", "IPIfNonMatch")
