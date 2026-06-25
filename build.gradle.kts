@@ -18,8 +18,8 @@ android {
         applicationId = "com.truva"
         minSdk = 24
         targetSdk = 34
-        versionCode = 60
-        versionName = "20.1.0"
+        versionCode = 61
+        versionName = "20.2.0"
     }
 
     testOptions {
